@@ -14,8 +14,10 @@ class Etape
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_recette = null;
+    // Jointure avec Recette
+    #[ORM\ManyToOne(targetEntity: Recette::class)]
+    #[ORM\JoinColumn(name: "id_recette", referencedColumnName: "id", nullable: false)]
+    private ?Recette $recette = null;
 
     #[ORM\Column]
     private ?int $numero_etape = null;
@@ -28,14 +30,14 @@ class Etape
         return $this->id;
     }
 
-    public function getIdRecette(): ?int
+    public function getRecette(): ?Recette
     {
-        return $this->id_recette;
+        return $this->recette;
     }
 
-    public function setIdRecette(int $id_recette): static
+    public function setRecette(Recette $recette): static
     {
-        $this->id_recette = $id_recette;
+        $this->recette = $recette;
 
         return $this;
     }

@@ -6,45 +6,38 @@ use App\Repository\UtiliserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UtiliserRepository::class)]
+#[ORM\Table(name: "utiliser")]
 class Utiliser
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\ManyToOne(targetEntity: Recette::class)]
+    #[ORM\JoinColumn(name: "id_recette", referencedColumnName: "id", nullable: false)]
+    private ?Recette $recette = null;
 
-    #[ORM\Column]
-    private ?int $id_recette = null;
+    #[ORM\Id]
+    #[ORM\ManyToOne(targetEntity: Ustensile::class)]
+    #[ORM\JoinColumn(name: "id_ustensile", referencedColumnName: "id", nullable: false)]
+    private ?Ustensile $ustensile = null;
 
-    #[ORM\Column]
-    private ?int $id_ustensile = null;
-
-    public function getId(): ?int
+    public function getRecette(): ?Recette
     {
-        return $this->id;
+        return $this->recette;
     }
 
-    public function getIdRecette(): ?int
+    public function setRecette(?Recette $recette): static
     {
-        return $this->id_recette;
-    }
-
-    public function setIdRecette(int $id_recette): static
-    {
-        $this->id_recette = $id_recette;
-
+        $this->recette = $recette;
         return $this;
     }
 
-    public function getIdUstensile(): ?int
+    public function getUstensile(): ?Ustensile
     {
-        return $this->id_ustensile;
+        return $this->ustensile;
     }
 
-    public function setIdUstensile(int $id_ustensile): static
+    public function setUstensile(?Ustensile $ustensile): static
     {
-        $this->id_ustensile = $id_ustensile;
-
+        $this->ustensile = $ustensile;
         return $this;
     }
 }

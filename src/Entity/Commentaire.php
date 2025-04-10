@@ -14,11 +14,15 @@ class Commentaire
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_utilisateur = null;
+    // Jointure avec Utilisateur
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(name: "id_utilisateur", referencedColumnName: "id", nullable: false)]
+    private ?Utilisateur $utilisateur = null;
 
-    #[ORM\Column]
-    private ?int $id_recette = null;
+    // Jointure avec Recette
+    #[ORM\ManyToOne(targetEntity: Recette::class)]
+    #[ORM\JoinColumn(name: "id_recette", referencedColumnName: "id", nullable: false)]
+    private ?Recette $recette = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $texte = null;
@@ -31,26 +35,26 @@ class Commentaire
         return $this->id;
     }
 
-    public function getIdUtilisateur(): ?int
+    public function getUtilisateur(): ?Utilisateur
     {
-        return $this->id_utilisateur;
+        return $this->utilisateur;
     }
 
-    public function setIdUtilisateur(int $id_utilisateur): static
+    public function setUtilisateur(Utilisateur $utilisateur): static
     {
-        $this->id_utilisateur = $id_utilisateur;
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
 
-    public function getIdRecette(): ?int
+    public function getRecette(): ?Recette
     {
-        return $this->id_recette;
+        return $this->recette;
     }
 
-    public function setIdRecette(int $id_recette): static
+    public function setRecette(Recette $recette): static
     {
-        $this->id_recette = $id_recette;
+        $this->recette = $recette;
 
         return $this;
     }
