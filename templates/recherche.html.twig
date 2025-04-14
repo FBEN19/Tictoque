@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche - TicToque{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="text-secondary">Résultats de la recherche</h2>
+        <button class="btn btn-outline-warning" id="filterBtn">
+            <i class="bi bi-funnel"></i> Filtrer
+        </button>
+    </div>
+
+    <div class="bg-white shadow-sm p-4 rounded">
+        <!-- Liste des repas -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-4">
+            <!-- Exemple de carte de produit -->
+            <div class="col">
+                <div class="card border-0 shadow-sm">
+                    <div class="position-relative">
+                        <img src="images/gateau-chocolat.jpeg" class="card-img-top rounded" style="height:300px;" alt="Gâteau au chocolat">
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Gâteau au chocolat</h5>
+                        <p class="mb-0">
+                            <span class="text-warning">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                            </span>
+                            4.6/5
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Répéter les autres cartes pour les recettes -->
+        </div>
+    </div>
+</div>
+
+<!-- Menu latéral des filtres -->
+<div id="filterSidebar" class="sidebar">
+    <button class="close-btn" id="closeFilter">&times;</button>
+    <h3 class="text-center mt-3">Filtrer les résultats</h3>
+
+<form class="p-3" id="filterForm" method="GET">
+
+    <!-- Filtre par note minimale -->
+    <div class="mb-3">
+        <label class="form-label">Note minimale :</label>
+        <select class="form-select" name="min_rating" id="minRating">
+            <option value="1">⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="5">⭐⭐⭐⭐⭐</option>
+        </select>
+    </div>
+
+    <!-- Filtre par ingrédient à exclure -->
+    <div class="mb-3">
+        <label class="form-label">Exclure un ingrédient :</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="exclude_ingredient" id="excludeIngredient" placeholder="Exemple : chocolat">
+            <button type="button" class="btn btn-danger" id="excludeBtn">Exclure</button>
+        </div>
+    </div>
+
+    <!-- Filtre par ordre (de plus récent à ancien ou par meilleure note) -->
+    <div class="mb-3">
+        <label class="form-label">Trier par :</label>
+        <select class="form-select" name="sort_order" id="sortOrder">
+            <option value="newest">Plus récent</option>
+            <option value="oldest">Plus ancien</option>
+            <option value="rating">Meilleure note</option>
+        </select>
+    </div>
+
+</form>
+
+</div>
+
+<!-- Styles et script pour le menu latéral -->
+<style>
+    .sidebar {
+        position: fixed;
+        top: 0;
+        right: -300px;
+        width: 300px;
+        height: 100%;
+        background: white;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        transition: 0.3s;
+        z-index: 1050;
+    }
+
+    .sidebar.show {
+        right: 0;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        float: right;
+    }
+</style>
+
+
+<!-- JavaScript pour soumettre automatiquement -->
+<script>
+    // Sélectionner le formulaire et les éléments de filtre
+    const filterForm = document.getElementById('filterForm');
+    const minRatingSelect = document.getElementById('minRating');
+    const sortOrderSelect = document.getElementById('sortOrder');
+
+    // Fonction pour soumettre le formulaire dès qu'un changement est détecté
+    const submitFormOnChange = () => {
+        filterForm.submit();
+    };
+
+    // Ajouter des écouteurs d'événements sur les éléments de formulaire
+    minRatingSelect.addEventListener('change', submitFormOnChange);
+    sortOrderSelect.addEventListener('change', submitFormOnChange);
+</script>
+
+<!-- JavaScript pour soumettre automatiquement avec l'exclusion d'un ingrédient -->
+<script>
+    document.getElementById('excludeBtn').addEventListener('click', function() {
+        const excludeIngredient = document.getElementById('excludeIngredient').value;
+        if (excludeIngredient) {
+            const form = document.getElementById('filterForm');
+            const excludeInput = document.createElement('input');
+            excludeInput.type = 'hidden';
+            excludeInput.name = 'exclude_ingredient';
+            excludeInput.value = excludeIngredient;
+
+            form.appendChild(excludeInput);
+            form.submit();
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('filterBtn').addEventListener('click', function() {
+        document.getElementById('filterSidebar').classList.add('show');
+    });
+
+    document.getElementById('closeFilter').addEventListener('click', function() {
+        document.getElementById('filterSidebar').classList.remove('show');
+    });
+
+    // Fonction pour exclure un ingrédient
+    document.getElementById('excludeBtn').addEventListener('click', function() {
+        let ingredient = document.querySelector('[name="exclude_ingredient"]').value;
+        alert('Ingrédient exclu : ' + ingredient);
+    });
+</script>
+
+{% endblock %}

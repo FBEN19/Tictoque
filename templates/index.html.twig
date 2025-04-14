@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="bg-white shadow-sm p-4 rounded">
+        <h1 class="text-center fw-bold">Top recettes</h1>
+        <div class="text-end mt-3">
+            <a href="#" class="fw-bold text-decoration-none" style="color:#F4A261;">
+                Voir plus <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for recette in topRecettes %}
+                <div class="col">
+                    <div class="card border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ asset('images/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.nom }}">
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ recette.nom }}</h5>
+                            <p class="mb-0">
+                                <span class="text-warning">
+                                    {% for i in 1..5 %}
+                                        {% if i <= recette.noteMoyenne %}
+                                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                                        {% else %}
+                                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                {{ recette.noteMoyenne }}/5
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <h2 class="text-center fw-bold m-5">Dernières recettes publiées</h2>
+        <div class="text-end mt-3">
+            <a href="#" class="fw-bold text-decoration-none" style="color:#F4A261;">
+                Voir plus <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for recette in dernieresRecettes %}
+                <div class="col">
+                    <div class="card border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ asset('images/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.nom }}">
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ recette.nom }}</h5>
+                            <p class="mb-0">
+                                <span class="text-warning">
+                                    {% for i in 1..5 %}
+                                        {% if i <= recette.noteMoyenne %}
+                                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                                        {% else %}
+                                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                {{ recette.noteMoyenne }}/5
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
