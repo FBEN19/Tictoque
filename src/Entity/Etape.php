@@ -1,33 +1,43 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\EtapeRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EtapeRepository::class)]
+#[ORM\Table(name: 'etape')]
 class Etape
 {
+    // Clé primaire 1/2
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    // Jointure avec Recette
-    #[ORM\ManyToOne(targetEntity: Recette::class)]
-    #[ORM\JoinColumn(name: "id_recette", referencedColumnName: "id", nullable: false)]
+    // Clé primaire 2/2 + clé étrangère vers recette
+    #[ORM\Id]
+    #[ORM\ManyToOne(targetEntity: Recette::class, inversedBy: 'etapes')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Recette $recette = null;
 
-    #[ORM\Column]
-    private ?int $numero_etape = null;
+    // Numéro d’ordre dans la recette
+    #[ORM\Column(type: 'integer')]
+    private ?int $numeroEtape = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    // Description de l’étape
+    #[ORM\Column(type: 'text')]
     private ?string $description = null;
+
+    // === GETTERS / SETTERS ===
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getRecette(): ?Recette
@@ -35,22 +45,20 @@ class Etape
         return $this->recette;
     }
 
-    public function setRecette(Recette $recette): static
+    public function setRecette(?Recette $recette): static
     {
         $this->recette = $recette;
-
         return $this;
     }
 
     public function getNumeroEtape(): ?int
     {
-        return $this->numero_etape;
+        return $this->numeroEtape;
     }
 
-    public function setNumeroEtape(int $numero_etape): static
+    public function setNumeroEtape(int $numeroEtape): static
     {
-        $this->numero_etape = $numero_etape;
-
+        $this->numeroEtape = $numeroEtape;
         return $this;
     }
 
@@ -62,7 +70,6 @@ class Etape
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 }
