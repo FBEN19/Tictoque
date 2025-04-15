@@ -14,28 +14,32 @@
     <div class="bg-white shadow-sm p-4 rounded">
         <!-- Liste des repas -->
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-4">
-            <!-- Exemple de carte de produit -->
-            <div class="col">
-                <div class="card border-0 shadow-sm">
-                    <div class="position-relative">
-                        <img src="images/gateau-chocolat.jpeg" class="card-img-top rounded" style="height:300px;" alt="Gâteau au chocolat">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Gâteau au chocolat</h5>
-                        <p class="mb-0">
-                            <span class="text-warning">
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                            </span>
-                            4.6/5
-                        </p>
+            {% for recette in resultats %}
+                <div class="col">
+                    <div class="card border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.nom }}">
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ recette.nom }}</h5>
+                            <p class="mb-0">
+                                <span class="text-warning">
+                                    {% for i in 1..5 %}
+                                        {% if i <= recette.note %}
+                                            <i class="fa-solid fa-star"></i>
+                                        {% else %}
+                                            <i class="fa-regular fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                {{ recette.note }}/5
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Répéter les autres cartes pour les recettes -->
+            {% else %}
+                <p>Aucune recette trouvée.</p>
+            {% endfor %}
         </div>
     </div>
 </div>
@@ -45,7 +49,7 @@
     <button class="close-btn" id="closeFilter">&times;</button>
     <h3 class="text-center mt-3">Filtrer les résultats</h3>
 
-<form class="p-3" id="filterForm" method="GET">
+<form class="p-3" id="filterForm" action="{{ path('app_recherche') }}" method="GET">
 
     <!-- Filtre par note minimale -->
     <div class="mb-3">

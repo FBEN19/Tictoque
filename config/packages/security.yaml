@@ -35,6 +35,9 @@ security:
         - { path: ^/js, roles: PUBLIC_ACCESS }
         - { path: ^/profil, roles: [ROLE_USER, ROLE_ADMIN] }
         - { path: ^/modifier-profil, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/deconnexion, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/changer-photo, roles: [ROLE_USER, ROLE_ADMIN] }
+
 
         # Par défaut, il faut être connecté
         - { path: ^/, roles: ROLE_USER }

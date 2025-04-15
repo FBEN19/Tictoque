@@ -4,9 +4,13 @@ namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProfilController extends AbstractController
 {
@@ -55,5 +59,34 @@ class ProfilController extends AbstractController
         // Retourner une réponse ou rediriger l'utilisateur
         $this->addFlash('success', 'Profil mis à jour avec succès.');
         return $this->redirectToRoute('app_profil'); // Redirection vers la page de profil après mise à jour
+    }
+
+    #[Route('/changer-photo', name: 'upload_photo_profil', methods: ['POST'])]
+    public function uploadPhotoProfil(Request $request, EntityManagerInterface $em): Response
+    {
+        $utilisateur = $this->getUser();
+    
+        $photo = $request->files->get('photo');
+        if ($photo instanceof UploadedFile) {
+            // Supprimer l'ancienne photo si elle existe
+            $anciennePhoto = $utilisateur->getPhotoProfil();
+            if ($anciennePhoto) {
+                $cheminFichier = $this->getParameter('photo_profil_directory') . '/' . $anciennePhoto;
+                if (file_exists($cheminFichier)) {
+                    unlink($cheminFichier); // Supprime le fichier
+                }
+            }
+    
+            // Traitement de la nouvelle photo
+            $extension = $photo->guessExtension();
+            $uniqueName = uniqid() . '.' . $extension;
+            $photo->move($this->getParameter('photo_profil_directory'), $uniqueName);
+    
+            $utilisateur->setPhotoProfil($uniqueName);
+            $em->persist($utilisateur);
+            $em->flush();
+        }
+    
+        return $this->redirectToRoute('app_profil');
     }
 }
