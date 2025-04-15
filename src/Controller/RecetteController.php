@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RecetteController extends AbstractController
 {
-    #[Route('/', name: 'app_recettes')]  // Remplacer '/recettes' par '/'
+    #[Route('/', name: 'app_home')]  // Remplacer '/recettes' par '/'
     public function index(RecetteRepository $recetteRepository, NoteRepository $noteRepository): Response
     {
         // On récupère les top recettes triées par note (note moyenne descendante)

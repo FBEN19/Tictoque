@@ -1,29 +1,43 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+        App\Entity\Utilisateur:
+            algorithm: auto
+
     providers:
-        users_in_memory: { memory: null }
+        utilisateur_provider:
+            entity:
+                class: App\Entity\Utilisateur
+                property: email
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
         main:
             lazy: true
-            provider: users_in_memory
+            provider: utilisateur_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                default_target_path: app_home  # à ajuster si nécessaire
+            logout:
+                path: app_logout
+                target: app_login
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # On autorise l’accès sans être connecté aux pages suivantes :
+        - { path: ^/connexion, roles: PUBLIC_ACCESS }
+        - { path: ^/inscription, roles: PUBLIC_ACCESS }
+        - { path: ^/recherche, roles: PUBLIC_ACCESS }
+        - { path: ^/$, roles: PUBLIC_ACCESS }  # page d'accueil
+        - { path: ^/css, roles: PUBLIC_ACCESS } # pour le CSS si tu en as en public
+        - { path: ^/js, roles: PUBLIC_ACCESS }
+        - { path: ^/profil, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/modifier-profil, roles: [ROLE_USER, ROLE_ADMIN] }
+
+        # Par défaut, il faut être connecté
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="bg-white shadow-sm p-5 rounded" style="max-width: 900px; margin: 0 auto;">
+        <div class="text-center">
+            <div class="profile-picture" style="width: 100px; height: 100px; border-radius: 50%; background-color: #F4A261; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; margin: 0 auto;">
+                {{ utilisateur.nom|slice(0, 1)|upper }}
+            </div>
+            <h3 class="mt-3">{{ utilisateur.nom }}</h3>
+            <p class="text-muted">Membre depuis : {{ utilisateur.dateInscription|date('d/m/Y') }}</p>
+        </div>
+
+        <hr>
+
+        <!-- Menu de navigation -->
+        <ul class="nav nav-tabs" id="profileTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="infos-tab" data-bs-toggle="tab" data-bs-target="#infos" type="button" style="color:#F4A261;" role="tab">Informations personnelles</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="recettes-tab" data-bs-toggle="tab" data-bs-target="#recettes" type="button" style="color:#F4A261;" role="tab">Mes Recettes</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-4" id="profileTabContent">
+            <!-- Informations personnelles -->
+            <div class="tab-pane fade show active" id="infos" role="tabpanel">
+                <form action="{{ path('modifier_profil') }}" method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            <input type="text" name="nom" class="form-control" value="{{ utilisateur.nom }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ utilisateur.email }}" required>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn" style="background-color:#F4A261; color:white;">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Mes Recettes -->
+            <div class="tab-pane fade" id="recettes" role="tabpanel">
+                <div class="mt-3">
+                    <h5>Mes Recettes</h5>
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        {% for recette in utilisateur.recettes %}
+                        <div class="col">
+                            <div class="card border-0 shadow-sm">
+                                <div class="position-relative">
+                                    <img src="{{ asset('images/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
+                                </div>
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ recette.titre }}</h5>
+                                    <p class="mb-2">
+                                        <span class="text-warning">
+                                            {% for i in 1..5 %}
+                                                {% if i <= recette.noteMoyenne %}
+                                                    <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                                                {% else %}
+                                                    <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                        {{ recette.noteMoyenne|number_format(1, '.', ',') }}/5
+                                    </p>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="#" class="btn btn-primary btn-sm">Modifier</a>
+                                        <a href="#" class="btn btn-danger btn-sm">Supprimer</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Aucune recette publiée pour le moment.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Bouton Ajouter -->
+                    <div class="mt-4 text-center">
+                        <a href="#" class="btn btn-success">Ajouter une recette</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

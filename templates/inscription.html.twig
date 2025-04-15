@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="bg-white shadow-sm p-5 rounded" style="max-width: 800px; margin: 0 auto;">
+        <h2 class="text-center mb-4" style="color: #F4A261;">Inscription</h2>
+
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_label(form.nom) }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Votre nom'}}) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Votre adresse e-mail'}}) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.mdp) }}
+                {{ form_widget(form.mdp, {'attr': {'class': 'form-control', 'placeholder': 'Choisissez un mot de passe'}}) }}
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn" style="background-color: #F4A261; color: white; width: 100%;">
+                    S'inscrire
+                </button>
+            </div>
+        {{ form_end(form) }}
+
+        <div class="mt-3 text-center">
+            <h6 class="text-muted">- OU -</h6>
+            <a href="{{ path('app_login') }}" class="btn mt-2"
+               style="background-color: white; color: #F4A261; border: 1px solid #F4A261;">
+                Se connecter
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,13 +1,18 @@
 <?php
 
+
 namespace App\Entity;
 
 use App\Repository\UtilisateurRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-class Utilisateur
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,7 +28,7 @@ class Utilisateur
     #[ORM\Column(length: 50)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255)]
     private ?string $mdp = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -108,4 +113,67 @@ class Utilisateur
 
         return $this;
     }
+
+    // Implémentation des méthodes de UserInterface
+
+    public function getRoles(): array
+    {
+        // Récupérer le rôle de l'utilisateur. Par défaut, on peut lui attribuer le rôle "ROLE_USER"
+        return array($this->role ?? 'ROLE_USER');
+    }
+
+    public function getPassword(): string
+    {
+        return $this->mdp;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function getSalt(): ?string
+    {
+        return null; // inutile avec bcrypt ou auto hasher
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Si vous stockez des informations sensibles temporairement (ex. : un token de réinitialisation de mot de passe), supprimez-le ici
+    }
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Recette::class)]
+    private Collection $recettes;
+
+    public function __construct()
+    {
+        $this->recettes = new ArrayCollection(); // On initialise avec une ArrayCollection
+    }
+
+    public function getRecettes(): Collection
+    {
+        return $this->recettes; // Doctrine retourne une PersistentCollection, mais c'est une sous-classe de Collection
+    }
+
+    public function addRecette(Recette $recette): self
+    {
+        if (!$this->recettes->contains($recette)) {
+            $this->recettes[] = $recette;
+            $recette->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecette(Recette $recette): self
+    {
+        if ($this->recettes->contains($recette)) {
+            $this->recettes->removeElement($recette);
+            if ($recette->getUtilisateur() === $this) {
+            }
+        }
+
+        return $this;
+    }
+
 }
