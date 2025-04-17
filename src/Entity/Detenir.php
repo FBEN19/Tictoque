@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Detenir
 {
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Recette::class)]
+    #[ORM\ManyToOne(inversedBy: 'detenir')]
     #[ORM\JoinColumn(name: "id_recette", referencedColumnName: "id", nullable: false)]
     private ?Recette $recette = null;
 

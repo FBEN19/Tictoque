@@ -8,15 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'etape')]
 class Etape
 {
-    // Clé primaire 1/2
+    // Clé primaire : 'id' auto-incrémenté
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')] // Cette ligne définit la génération automatique de l'ID
     private ?int $id = null;
 
-    // Clé primaire 2/2 + clé étrangère vers recette
-    #[ORM\Id]
+    // Clé étrangère vers 'Recette' (id_recette)
     #[ORM\ManyToOne(targetEntity: Recette::class, inversedBy: 'etapes')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'recette_id', referencedColumnName: 'id', nullable: false)]
     private ?Recette $recette = null;
 
     // Numéro d’ordre dans la recette

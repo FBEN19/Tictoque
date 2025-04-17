@@ -14,12 +14,8 @@ class EtapeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('numeroEtape', IntegerType::class, [
-                'label' => 'Numéro d\'étape'
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description de l\'étape'
-            ]);
+            ->add('numeroEtape', IntegerType::class)
+            ->add('description', TextareaType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

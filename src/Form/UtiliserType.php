@@ -1,6 +1,4 @@
 <?php
-
-// src/Form/UtiliserType.php
 namespace App\Form;
 
 use App\Entity\Utiliser;
@@ -18,7 +16,6 @@ class UtiliserType extends AbstractType
             ->add('ustensile', EntityType::class, [
                 'class' => Ustensile::class,
                 'choice_label' => 'nom',
-                'label' => 'Ustensile'
             ]);
     }
 

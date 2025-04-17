@@ -1,16 +1,108 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nouvelle Recette{% endblock %}
+{% block title %}Ajouter une recette{% endblock %}
 
-{% block body %}
-    <div class="container mt-5">
-        <h1>Créer une recette</h1>
+{% block content %}
+<div class="container my-5 p-4 shadow rounded bg-light">
+    <h2 class="mb-4 text-center">Ajouter une nouvelle recette</h2>
 
     {{ form_start(form) }}
-        {{ form_row(form.titre) }}
-        {{ form_row(form.description) }}
-        {{ form_row(form.image) }}
-        {{ form_row(form.submit) }}
+        <div class="mb-3">
+            {{ form_label(form.titre, 'Titre de la recette', {'attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.description, 'Description', {'attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.image, 'Image', {'attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <hr>
+
+        <div id="etapes" class="mb-4" data-prototype="{{ form_widget(form.etapes.vars.prototype)|e('html_attr') }}">
+            <label class="form-label">Étapes</label>
+            {% for etape in form.etapes %}
+                <div class="row g-2 mb-2">
+                    <div class="col-md-2">
+                        {{ form_widget(etape.numeroEtape, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-10">
+                        {{ form_widget(etape.description, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="supprimerFormulaire(this)">Supprimer</button>
+                </div>
+            {% endfor %}
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="ajouterFormulaire('etapes')">+ Ajouter une étape</button>
+        </div>
+
+        <hr>
+
+        <div id="ingredients" class="mb-4" data-prototype="{{ form_widget(form.detenir.vars.prototype)|e('html_attr') }}">
+            <label class="form-label">Ingrédients</label>
+            {% for ingredient in form.detenir %}
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4">
+                        {{ form_widget(ingredient.ingredient, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form_widget(ingredient.quantite, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form_widget(ingredient.unite, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="supprimerFormulaire(this)">Supprimer</button>
+                </div>
+            {% endfor %}
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="ajouterFormulaire('ingredients')">+ Ajouter un ingrédient</button>
+        </div>
+
+        <hr>
+
+        <div id="ustensiles" class="mb-4" data-prototype="{{ form_widget(form.utiliser.vars.prototype)|e('html_attr') }}">
+            <label class="form-label">Ustensiles</label>
+            {% for ustensile in form.utiliser %}
+                <div class="row g-2 mb-2">
+                    <div class="col-md-12">
+                        {{ form_widget(ustensile, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="supprimerFormulaire(this)">Supprimer</button>
+                </div>
+            {% endfor %}
+            <button type="button" class="btn btn-outline-warning btn-sm" onclick="ajouterFormulaire('ustensiles')">+ Ajouter un ustensile</button>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary">Ajouter la recette</button>
+        </div>
     {{ form_end(form) }}
-    </div>
+</div>
+
+<script>
+    function ajouterFormulaire(type) {
+        const container = document.getElementById(type);
+        const prototype = container.dataset.prototype;
+        const index = container.querySelectorAll('div.row').length;
+        const newForm = document.createElement('div');
+        newForm.classList.add('row', 'g-2', 'mb-2');
+        newForm.innerHTML = prototype.replace(/__name__/g, index);
+        
+        const boutonSuppression = document.createElement('button');
+        boutonSuppression.type = "button";
+        boutonSuppression.className = "btn btn-sm btn-danger mt-2";
+        boutonSuppression.innerText = "Supprimer";
+        boutonSuppression.onclick = function() { supprimerFormulaire(boutonSuppression); };
+        
+        newForm.appendChild(boutonSuppression);
+        container.insertBefore(newForm, container.lastElementChild);
+    }
+
+    function supprimerFormulaire(button) {
+        button.parentElement.remove();
+    }
+</script>
 {% endblock %}

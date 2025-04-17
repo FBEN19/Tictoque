@@ -5,7 +5,8 @@ namespace App\Entity;
 use App\Repository\RecetteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 #[ORM\Entity(repositoryClass: RecetteRepository::class)]
 class Recette
 {
@@ -94,5 +95,145 @@ class Recette
         $this->utilisateur = $utilisateur;
 
         return $this;
+    }
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Etape::class, cascade: ['persist', 'remove'])]
+    private Collection $etapes;
+
+    public function __construct()
+    {
+        $this->etapes = new ArrayCollection();
+        $this->detenir = new ArrayCollection();
+        $this->utiliser = new ArrayCollection();
+        $this->notes = new ArrayCollection();
+
+    }
+
+    public function getEtapes(): Collection
+    {
+        return $this->etapes;
+    }
+
+    public function addEtape(Etape $etape): self
+    {
+        if (!$this->etapes->contains($etape)) {
+            $this->etapes[] = $etape;
+            $etape->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtape(Etape $etape): self
+    {
+        if ($this->etapes->removeElement($etape)) {
+            if ($etape->getRecette() === $this) {
+                $etape->setRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Detenir::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $detenir;
+
+    public function getDetenir(): Collection
+    {
+        return $this->detenir;
+    }
+
+    public function addDetenir(Detenir $d): self
+    {
+        if (!$this->detenir->contains($d)) {
+            $this->detenir[] = $d;
+            $d->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetenir(Detenir $d): self
+    {
+        if ($this->detenir->removeElement($d)) {
+            if ($d->getRecette() === $this) {
+                $d->setRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Utiliser::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $utiliser;
+
+    public function getUtiliser(): Collection
+    {
+        return $this->utiliser;
+    }
+
+    public function addUtiliser(Utiliser $u): self
+    {
+        if (!$this->utiliser->contains($u)) {
+            $this->utiliser[] = $u;
+            $u->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUtiliser(Utiliser $u): self
+    {
+        if ($this->utiliser->removeElement($u)) {
+            if ($u->getRecette() === $this) {
+                $u->setRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Note::class, cascade: ['remove'])]
+    private Collection $notes;
+
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function addNote(Note $note): self
+    {
+        if (!$this->notes->contains($note)) {
+            $this->notes[] = $note;
+            $note->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNote(Note $note): self
+    {
+        if ($this->notes->removeElement($note)) {
+            if ($note->getRecette() === $this) {
+                $note->setRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getNoteMoyenne(): ?float
+    {
+        $notes = $this->getNotes();
+        if (count($notes) === 0) {
+            return 0;
+        }
+
+        $somme = 0;
+        foreach ($notes as $note) {
+            $somme += $note->getNote();
+        }
+
+        return round($somme / count($notes), 2); // moyenne arrondie à 2 décimales
     }
 }

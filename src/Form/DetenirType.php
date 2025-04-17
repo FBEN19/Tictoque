@@ -1,5 +1,4 @@
 <?php
-// src/Form/DetenirType.php
 namespace App\Form;
 
 use App\Entity\Detenir;
@@ -18,11 +17,8 @@ class DetenirType extends AbstractType
             ->add('ingredient', EntityType::class, [
                 'class' => Ingredient::class,
                 'choice_label' => 'nom',
-                'label' => 'Ingrédient'
             ])
-            ->add('quantite', TextType::class, [
-                'label' => 'Quantité'
-            ]);
+            ->add('quantite', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

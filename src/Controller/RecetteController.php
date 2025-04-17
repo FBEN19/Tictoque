@@ -20,6 +20,7 @@ use App\Entity\Utiliser;
 use App\Entity\Etape;
 use App\Form\EtapeType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\String\Slugger\SluggerInterface;
 class RecetteController extends AbstractController
 {
     #[Route('/', name: 'app_home')]  // Remplacer '/recettes' par '/'
@@ -44,29 +45,57 @@ class RecetteController extends AbstractController
     }
 
     #[Route('/ajouter-recette', name: 'ajouter_recette')]
-    public function ajouter(Request $request, EntityManagerInterface $em): Response
+    public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $recette = new Recette();
-
         $form = $this->createForm(RecetteType::class, $recette);
         $form->handleRequest($request);
 
-        dd($form);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // Remplissage automatique
-            $recette->setDateCreation(new \DateTime());
+            // Gestion de l'image
+            $imageFile = $form->get('image')->getData();
 
-            // Utilisateur connecté
-            $utilisateur = $this->getUser();
-            if ($utilisateur) {
-                $recette->setUtilisateur($utilisateur);
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_recette_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Gestion de l’erreur si besoin
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                }
+
+                $recette->setImage($newFilename);
             }
 
+            // Informations supplémentaires
+            $recette->setDateCreation(new \DateTime());
+            $recette->setUtilisateur($this->getUser());
+
+            // Liaison des sous-éléments à la recette
+            foreach ($recette->getEtapes() as $etape) {
+                $etape->setRecette($recette);
+            }
+
+            foreach ($recette->getDetenir() as $detenir) {
+                $detenir->setRecette($recette);
+            }
+
+            foreach ($recette->getUtiliser() as $utiliser) {
+                $utiliser->setRecette($recette);
+            }
+
+            // Enregistrement
             $em->persist($recette);
             $em->flush();
 
-            return $this->redirectToRoute('ajouter_etape', ['id' => $recette->getId()]);
+            $this->addFlash('success', 'Recette ajoutée avec succès !');
+            return $this->redirectToRoute('app_profil');
         }
 
         return $this->render('ajouter.html.twig', [
