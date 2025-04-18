@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Recette;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 class ProfilController extends AbstractController
 {
     #[Route('/profil', name: 'app_profil')]
@@ -93,6 +95,15 @@ class ProfilController extends AbstractController
     #[Route('/supprimer-recette/{id}', name: 'supprimer_recette')]
     public function supprimerRecette(Recette $recette, EntityManagerInterface $em): Response
     {
+        // Récupération du nom de fichier
+        $nomImage = $recette->getImage(); // ou le nom de ton getter
+        $cheminImage = $this->getParameter('kernel.project_dir') . '/public/images/recettes/' . $nomImage;
+
+        $filesystem = new Filesystem();
+        if ($filesystem->exists($cheminImage)) {
+            $filesystem->remove($cheminImage);
+        }
+
         // Supprimer les étapes
         foreach ($recette->getEtapes() as $etape) {
             $em->remove($etape);
@@ -118,11 +129,11 @@ class ProfilController extends AbstractController
             $em->remove($note);
         }
 
-        // Enfin, supprimer la recette
+        // Supprimer la recette
         $em->remove($recette);
         $em->flush();
 
         $this->addFlash('success', 'Recette supprimée avec succès.');
-        return $this->redirectToRoute('app_profil'); // ou la route vers le profil utilisateur
+        return $this->redirectToRoute('app_profil');
     }
 }
