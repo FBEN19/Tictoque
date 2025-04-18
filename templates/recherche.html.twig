@@ -14,25 +14,27 @@
     <div class="bg-white shadow-sm p-4 rounded">
         <!-- Liste des repas -->
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-4">
-            {% for recette in resultats %}
+            {% for data in resultats %}
+                {% set recette = data.recette %}
+                {% set moyenne = data.moyenne %}
                 <div class="col">
                     <div class="card border-0 shadow-sm">
                         <div class="position-relative">
-                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.nom }}">
+                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
                         </div>
                         <div class="card-body text-center">
-                            <h5 class="card-title">{{ recette.nom }}</h5>
+                            <h5 class="card-title">{{ recette.titre }}</h5>
                             <p class="mb-0">
                                 <span class="text-warning">
                                     {% for i in 1..5 %}
-                                        {% if i <= recette.note %}
+                                        {% if i <= moyenne %}
                                             <i class="fa-solid fa-star"></i>
                                         {% else %}
                                             <i class="fa-regular fa-star"></i>
                                         {% endif %}
                                     {% endfor %}
                                 </span>
-                                {{ recette.note }}/5
+                                {{ moyenne }}/5
                             </p>
                         </div>
                     </div>

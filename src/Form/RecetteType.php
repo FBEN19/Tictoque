@@ -47,6 +47,7 @@ class RecetteType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => false,
                 'prototype' => true,
+                'label' => false,
             ])
             ->add('detenir', CollectionType::class, [
                 'entry_type' => DetenirType::class,
@@ -54,6 +55,7 @@ class RecetteType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => false,
                 'prototype' => true,
+                'label' => false,
             ])
             ->add('utiliser', CollectionType::class, [
                 'entry_type' => UtiliserType::class,
@@ -61,6 +63,7 @@ class RecetteType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => false,
                 'prototype' => true,
+                'label' => false,
             ]);
     }
 

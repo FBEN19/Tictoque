@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
-
+use App\Entity\Recette;
 class ProfilController extends AbstractController
 {
     #[Route('/profil', name: 'app_profil')]
@@ -88,5 +88,41 @@ class ProfilController extends AbstractController
         }
     
         return $this->redirectToRoute('app_profil');
+    }
+
+    #[Route('/supprimer-recette/{id}', name: 'supprimer_recette')]
+    public function supprimerRecette(Recette $recette, EntityManagerInterface $em): Response
+    {
+        // Supprimer les étapes
+        foreach ($recette->getEtapes() as $etape) {
+            $em->remove($etape);
+        }
+
+        // Supprimer les liaisons ustensiles
+        foreach ($recette->getUstensiles() as $utilisation) {
+            $em->remove($utilisation);
+        }
+
+        // Supprimer les liaisons ingrédients
+        foreach ($recette->getDetenir() as $detenir) {
+            $em->remove($detenir);
+        }
+
+        // Supprimer les commentaires
+        foreach ($recette->getCommentaires() as $commentaire) {
+            $em->remove($commentaire);
+        }
+
+        // Supprimer les notes
+        foreach ($recette->getNotes() as $note) {
+            $em->remove($note);
+        }
+
+        // Enfin, supprimer la recette
+        $em->remove($recette);
+        $em->flush();
+
+        $this->addFlash('success', 'Recette supprimée avec succès.');
+        return $this->redirectToRoute('app_profil'); // ou la route vers le profil utilisateur
     }
 }

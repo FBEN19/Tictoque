@@ -1,11 +1,11 @@
 <?php
 
-
 // src/Controller/RechercheController.php
 
 namespace App\Controller;
 
-use App\Repository\RecetteRepository; // Assurez-vous que RecetteRepository est créé et bien configuré
+use App\Repository\RecetteRepository;
+use App\Repository\NoteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RechercheController extends AbstractController
 {
     #[Route('/recherche', name: 'app_recherche')]
-    public function recherche(Request $request, RecetteRepository $recetteRepository): Response
+    public function recherche(Request $request, RecetteRepository $recetteRepository, NoteRepository $noteRepository): Response
     {
         $terme = $request->query->get('q');
         $minRating = $request->query->get('min_rating');
@@ -25,17 +25,17 @@ class RechercheController extends AbstractController
 
         if ($terme) {
             $qb->andWhere('r.nom LIKE :terme')
-            ->setParameter('terme', '%' . $terme . '%');
+                ->setParameter('terme', '%' . $terme . '%');
         }
 
         if ($minRating) {
             $qb->andWhere('r.note >= :minRating')
-            ->setParameter('minRating', $minRating);
+                ->setParameter('minRating', $minRating);
         }
 
         if ($excludeIngredient) {
             $qb->andWhere('r.ingredients NOT LIKE :exclude')
-            ->setParameter('exclude', '%' . $excludeIngredient . '%');
+                ->setParameter('exclude', '%' . $excludeIngredient . '%');
         }
 
         if ($sortOrder === 'newest') {
@@ -48,8 +48,18 @@ class RechercheController extends AbstractController
 
         $resultats = $qb->getQuery()->getResult();
 
+        // 🔥 Ajouter la note moyenne pour chaque recette
+        $recettesAvecMoyenne = [];
+        foreach ($resultats as $recette) {
+            $moyenne = $noteRepository->calculerNoteMoyennePourRecette($recette);
+            $recettesAvecMoyenne[] = [
+                'recette' => $recette,
+                'moyenne' => round($moyenne, 1)
+            ];
+        }
+
         return $this->render('recherche.html.twig', [
-            'resultats' => $resultats,
+            'resultats' => $recettesAvecMoyenne,
             'terme' => $terme,
         ]);
     }

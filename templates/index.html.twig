@@ -14,10 +14,10 @@
                 <div class="col">
                     <div class="card border-0 shadow-sm">
                         <div class="position-relative">
-                            <img src="{{ asset('images/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.nom }}">
+                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
                         </div>
                         <div class="card-body text-center">
-                            <h5 class="card-title">{{ recette.nom }}</h5>
+                            <h5 class="card-title">{{ recette.titre }}</h5>
                             <p class="mb-0">
                                 <span class="text-warning">
                                     {% for i in 1..5 %}
@@ -47,10 +47,10 @@
                 <div class="col">
                     <div class="card border-0 shadow-sm">
                         <div class="position-relative">
-                            <img src="{{ asset('images/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.nom }}">
+                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
                         </div>
                         <div class="card-body text-center">
-                            <h5 class="card-title">{{ recette.nom }}</h5>
+                            <h5 class="card-title">{{ recette.titre }}</h5>
                             <p class="mb-0">
                                 <span class="text-warning">
                                     {% for i in 1..5 %}

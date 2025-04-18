@@ -38,6 +38,7 @@ security:
         - { path: ^/deconnexion, roles: [ROLE_USER, ROLE_ADMIN] }
         - { path: ^/changer-photo, roles: [ROLE_USER, ROLE_ADMIN] }
         - { path: ^/ajouter-recette, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/supprimer-recette/., roles: [ROLE_USER, ROLE_ADMIN] }
 
 
         # Par défaut, il faut être connecté

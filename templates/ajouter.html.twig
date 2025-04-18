@@ -25,7 +25,7 @@
         <hr>
 
         <div id="etapes" class="mb-4" data-prototype="{{ form_widget(form.etapes.vars.prototype)|e('html_attr') }}">
-            <label class="form-label">Étapes</label>
+            <label class="form-label">Étapes : </label>
             {% for etape in form.etapes %}
                 <div class="row g-2 mb-2">
                     <div class="col-md-2">
@@ -34,7 +34,7 @@
                     <div class="col-md-10">
                         {{ form_widget(etape.description, {'attr': {'class': 'form-control'}}) }}
                     </div>
-                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="supprimerFormulaire(this)">Supprimer</button>
+                    <button type="button" class="btn btn-sm btn-danger mt-2 w-25" onclick="supprimerFormulaire(this)">Supprimer</button>
                 </div>
             {% endfor %}
             <button type="button" class="btn btn-outline-primary btn-sm" onclick="ajouterFormulaire('etapes')">+ Ajouter une étape</button>
@@ -43,7 +43,7 @@
         <hr>
 
         <div id="ingredients" class="mb-4" data-prototype="{{ form_widget(form.detenir.vars.prototype)|e('html_attr') }}">
-            <label class="form-label">Ingrédients</label>
+            <label class="form-label">Ingrédients : </label>
             {% for ingredient in form.detenir %}
                 <div class="row g-2 mb-2">
                     <div class="col-md-4">
@@ -55,7 +55,7 @@
                     <div class="col-md-4">
                         {{ form_widget(ingredient.unite, {'attr': {'class': 'form-control'}}) }}
                     </div>
-                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="supprimerFormulaire(this)">Supprimer</button>
+                    <button type="button" class="btn btn-sm btn-danger mt-2 w-25" onclick="supprimerFormulaire(this)">Supprimer</button>
                 </div>
             {% endfor %}
             <button type="button" class="btn btn-outline-success btn-sm" onclick="ajouterFormulaire('ingredients')">+ Ajouter un ingrédient</button>
@@ -64,13 +64,13 @@
         <hr>
 
         <div id="ustensiles" class="mb-4" data-prototype="{{ form_widget(form.utiliser.vars.prototype)|e('html_attr') }}">
-            <label class="form-label">Ustensiles</label>
+            <label class="form-label">Ustensiles : </label>
             {% for ustensile in form.utiliser %}
                 <div class="row g-2 mb-2">
                     <div class="col-md-12">
-                        {{ form_widget(ustensile, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_widget(ustensile, {'attr': {'class': ''}}) }}
                     </div>
-                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="supprimerFormulaire(this)">Supprimer</button>
+                    <button type="button" class="btn btn-sm btn-danger mt-2 w-25" onclick="supprimerFormulaire(this)">Supprimer</button>
                 </div>
             {% endfor %}
             <button type="button" class="btn btn-outline-warning btn-sm" onclick="ajouterFormulaire('ustensiles')">+ Ajouter un ustensile</button>
@@ -90,13 +90,26 @@
         const newForm = document.createElement('div');
         newForm.classList.add('row', 'g-2', 'mb-2');
         newForm.innerHTML = prototype.replace(/__name__/g, index);
-        
+
+        // Ajouter la classe 'form-control' aux balises input, select et textarea
+        const elements = newForm.querySelectorAll('input, select, textarea');
+        elements.forEach(el => {
+            el.classList.add('form-control');
+        });
+
+        if (type === 'etapes') {
+            const numeroInput = newForm.querySelector('[id*="_numeroEtape"]');
+            if (numeroInput) {
+                numeroInput.value = index + 1; // commence à 1 puis +1 à chaque ajout
+            }
+        }
+
         const boutonSuppression = document.createElement('button');
         boutonSuppression.type = "button";
-        boutonSuppression.className = "btn btn-sm btn-danger mt-2";
+        boutonSuppression.className = "btn btn-sm btn-danger mt-2 w-25";
         boutonSuppression.innerText = "Supprimer";
         boutonSuppression.onclick = function() { supprimerFormulaire(boutonSuppression); };
-        
+
         newForm.appendChild(boutonSuppression);
         container.insertBefore(newForm, container.lastElementChild);
     }
@@ -105,4 +118,5 @@
         button.parentElement.remove();
     }
 </script>
+
 {% endblock %}

@@ -98,7 +98,7 @@
                                     </p>
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="#" class="btn btn-primary btn-sm">Modifier</a>
-                                        <a href="#" class="btn btn-danger btn-sm">Supprimer</a>
+                                        <a href="{{ path('supprimer_recette', {'id': recette.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette recette ?')">Supprimer</a>
                                     </div>
                                 </div>
                             </div>
@@ -119,4 +119,12 @@
         </div>
     </div>
 </div>
+
+    <script>
+    const profile = document.querySelector('.profile-picture');
+    const overlay = profile.querySelector('.overlay');
+
+    profile.addEventListener('mouseover', () => overlay.style.display = 'flex');
+    profile.addEventListener('mouseout', () => overlay.style.display = 'none');
+    </script>
 {% endblock %}

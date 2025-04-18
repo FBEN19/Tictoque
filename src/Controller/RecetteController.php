@@ -35,7 +35,7 @@ class RecetteController extends AbstractController
         // Calculer la note moyenne pour chaque recette
         foreach ($topRecettes as $recette) {
             $noteMoyenne = $noteRepository->calculerNoteMoyennePourRecette($recette);
-            $recette->setNoteMoyenne($noteMoyenne); // Affecte la note moyenne (sans toucher à Recette.php, si tu veux la conserver dans une variable)
+
         }
 
         return $this->render('index.html.twig', [
@@ -102,4 +102,5 @@ class RecetteController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 }

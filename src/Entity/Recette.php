@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
 #[ORM\Entity(repositoryClass: RecetteRepository::class)]
 class Recette
 {
@@ -31,6 +32,33 @@ class Recette
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "id_utilisateur", referencedColumnName: "id", nullable: false)]
     private ?Utilisateur $utilisateur = null;
+
+    // Déclaration de la propriété $commentaires avant le constructeur
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Commentaire::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $commentaires;
+
+    // Déclaration des autres propriétés
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Etape::class, cascade: ['persist', 'remove'])]
+    private Collection $etapes;
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Detenir::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $detenir;
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Utiliser::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $utiliser;
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Note::class, cascade: ['remove'])]
+    private Collection $notes;
+
+    public function __construct()
+    {
+        // Initialisation des propriétés
+        $this->etapes = new ArrayCollection();
+        $this->detenir = new ArrayCollection();
+        $this->utiliser = new ArrayCollection();
+        $this->notes = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();  // Initialisation de la propriété $commentaires
+    }
 
     public function getId(): ?int
     {
@@ -97,18 +125,6 @@ class Recette
         return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Etape::class, cascade: ['persist', 'remove'])]
-    private Collection $etapes;
-
-    public function __construct()
-    {
-        $this->etapes = new ArrayCollection();
-        $this->detenir = new ArrayCollection();
-        $this->utiliser = new ArrayCollection();
-        $this->notes = new ArrayCollection();
-
-    }
-
     public function getEtapes(): Collection
     {
         return $this->etapes;
@@ -134,9 +150,6 @@ class Recette
 
         return $this;
     }
-
-    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Detenir::class, cascade: ['persist'], orphanRemoval: true)]
-    private Collection $detenir;
 
     public function getDetenir(): Collection
     {
@@ -164,9 +177,6 @@ class Recette
         return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Utiliser::class, cascade: ['persist'], orphanRemoval: true)]
-    private Collection $utiliser;
-
     public function getUtiliser(): Collection
     {
         return $this->utiliser;
@@ -192,9 +202,6 @@ class Recette
 
         return $this;
     }
-
-    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Note::class, cascade: ['remove'])]
-    private Collection $notes;
 
     public function getNotes(): Collection
     {
@@ -235,5 +242,21 @@ class Recette
         }
 
         return round($somme / count($notes), 2); // moyenne arrondie à 2 décimales
+    }
+
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+    public function getUstensiles(): array
+    {
+        $ustensiles = [];
+        foreach ($this->utiliser as $utilisation) {
+            $ustensile = $utilisation->getUstensile();
+            if ($ustensile !== null) {
+                $ustensiles[] = $ustensile;
+            }
+        }
+        return $ustensiles;
     }
 }
