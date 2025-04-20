@@ -98,8 +98,65 @@ class RecetteController extends AbstractController
             return $this->redirectToRoute('app_profil');
         }
 
-        return $this->render('ajouter.html.twig', [
+        return $this->render('recette.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/modifier-recette/{id}', name: 'modifier_recette')]
+    public function modifier(
+        Recette $recette,
+        Request $request,
+        EntityManagerInterface $em,
+        SluggerInterface $slugger
+    ): Response {
+        // Vérifie si l'utilisateur est bien propriétaire
+        if ($recette->getUtilisateur() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette recette.');
+        }
+
+        $form = $this->createForm(RecetteType::class, $recette);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_recette_directory'),
+                        $newFilename
+                    );
+                    $recette->setImage($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
+            // Met à jour les relations
+            foreach ($recette->getEtapes() as $etape) {
+                $etape->setRecette($recette);
+            }
+            foreach ($recette->getDetenir() as $detenir) {
+                $detenir->setRecette($recette);
+            }
+            foreach ($recette->getUtiliser() as $utiliser) {
+                $utiliser->setRecette($recette);
+            }
+
+            $em->flush();
+
+            $this->addFlash('success', 'Recette modifiée avec succès !');
+            return $this->redirectToRoute('app_profil');
+        }
+
+        return $this->render('recette.html.twig', [
+            'form' => $form->createView(),
+            'modifier' => true
         ]);
     }
 

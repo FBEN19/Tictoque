@@ -14,17 +14,26 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Recette;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Knp\Component\Pager\PaginatorInterface;
+
+
+
 class ProfilController extends AbstractController
 {
     #[Route('/profil', name: 'app_profil')]
-    public function profil(): Response
+    public function profil(PaginatorInterface $paginator, Request $request): Response
     {
-        $utilisateur = $this->getUser(); // Récupère l'utilisateur connecté
-        $recettes = $utilisateur->getRecettes(); // Récupère ses recettes
+        $utilisateur = $this->getUser();
+
+        $pagination = $paginator->paginate(
+            $utilisateur->getRecettes(), // ou une requête DQL si tu veux
+            $request->query->getInt('page', 1),
+            3 // Par page
+        );
 
         return $this->render('profil.html.twig', [
             'utilisateur' => $utilisateur,
-            'recettes' => $recettes, // Passe les recettes au template
+            'pagination' => $pagination
         ]);
     }
 

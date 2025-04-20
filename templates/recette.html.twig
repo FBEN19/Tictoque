@@ -1,10 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter une recette{% endblock %}
+{% block title %}{{ modifier is defined and modifier ? 'Modifier la recette' : 'Ajouter une recette' }}{% endblock %}
 
 {% block content %}
 <div class="container my-5 p-4 shadow rounded bg-light">
-    <h2 class="mb-4 text-center">Ajouter une nouvelle recette</h2>
+    <h2 class="mb-4 text-center">
+        {{ modifier is defined and modifier ? 'Modifier la recette' : 'Ajouter une nouvelle recette' }}
+    </h2>
 
     {{ form_start(form) }}
         <div class="mb-3">
@@ -77,7 +79,9 @@
         </div>
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary">Ajouter la recette</button>
+            <button type="submit" class="btn btn-primary">
+                {{ modifier is defined and modifier ? 'Modifier la recette' : 'Ajouter la recette' }}
+            </button>
         </div>
     {{ form_end(form) }}
 </div>
