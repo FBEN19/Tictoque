@@ -1,6 +1,5 @@
 <?php
 
-// src/Controller/RecetteController.php
 
 namespace App\Controller;
 
@@ -23,16 +22,13 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\String\Slugger\SluggerInterface;
 class RecetteController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]  // Remplacer '/recettes' par '/'
+    #[Route('/', name: 'app_home')]
     public function index(RecetteRepository $recetteRepository, NoteRepository $noteRepository): Response
     {
-        // On récupère les top recettes triées par note (note moyenne descendante)
         $topRecettes = $recetteRepository->findBy([], ['date_creation' => 'DESC'], 4);
 
-        // On récupère les dernières recettes triées par date de création descendante
         $dernieresRecettes = $recetteRepository->findBy([], ['date_creation' => 'DESC'], 4);
 
-        // Calculer la note moyenne pour chaque recette
         foreach ($topRecettes as $recette) {
             $noteMoyenne = $noteRepository->calculerNoteMoyennePourRecette($recette);
 
@@ -52,7 +48,6 @@ class RecetteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'image
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
@@ -66,18 +61,15 @@ class RecetteController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    // Gestion de l’erreur si besoin
                     $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                 }
 
                 $recette->setImage($newFilename);
             }
 
-            // Informations supplémentaires
             $recette->setDateCreation(new \DateTime());
             $recette->setUtilisateur($this->getUser());
 
-            // Liaison des sous-éléments à la recette
             foreach ($recette->getEtapes() as $etape) {
                 $etape->setRecette($recette);
             }
@@ -90,7 +82,6 @@ class RecetteController extends AbstractController
                 $utiliser->setRecette($recette);
             }
 
-            // Enregistrement
             $em->persist($recette);
             $em->flush();
 
@@ -110,7 +101,6 @@ class RecetteController extends AbstractController
         EntityManagerInterface $em,
         SluggerInterface $slugger
     ): Response {
-        // Vérifie si l'utilisateur est bien propriétaire
         if ($recette->getUtilisateur() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette recette.');
         }
@@ -137,7 +127,6 @@ class RecetteController extends AbstractController
                 }
             }
 
-            // Met à jour les relations
             foreach ($recette->getEtapes() as $etape) {
                 $etape->setRecette($recette);
             }

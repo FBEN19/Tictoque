@@ -41,7 +41,6 @@
 
         <hr>
 
-        <!-- Menu de navigation -->
         <ul class="nav nav-tabs" id="profileTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="infos-tab" data-bs-toggle="tab" data-bs-target="#infos" type="button" style="color:#F4A261;" role="tab">Informations personnelles</button>
@@ -52,7 +51,6 @@
         </ul>
 
         <div class="tab-content mt-4" id="profileTabContent">
-            <!-- Informations personnelles -->
             <div class="tab-pane fade show active" id="infos" role="tabpanel">
                 <form action="{{ path('modifier_profil') }}" method="POST">
                     <div class="row">
@@ -71,7 +69,6 @@
                 </form>
             </div>
 
-            <!-- Mes Recettes -->
             <div class="tab-pane fade" id="recettes" role="tabpanel">
                 <div class="mt-3">
                     <h5>Mes Recettes</h5>
@@ -144,7 +141,6 @@
                             </ul>
                         </nav>
                     {% endif %}
-                    <!-- Bouton Ajouter -->
                     <div class="mt-4 text-center">
                         <a href="{{ path('ajouter_recette') }}" class="btn btn-success">Ajouter une recette</a>
                     </div>
@@ -154,19 +150,5 @@
     </div>
 </div>
 
-    <script>
-    const profile = document.querySelector('.profile-picture');
-    const overlay = profile.querySelector('.overlay');
-
-    profile.addEventListener('mouseover', () => overlay.style.display = 'flex');
-    profile.addEventListener('mouseout', () => overlay.style.display = 'none');
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        if (window.location.hash === "#recettes") {
-            const tab = new bootstrap.Tab(document.querySelector('#recettes-tab'));
-            tab.show();
-        }
-    });
-</script>
+    <script src="{{ asset('js/profil.js') }}"></script>
 {% endblock %}

@@ -114,11 +114,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Implémentation des méthodes de UserInterface
 
     public function getRoles(): array
     {
-        // Récupérer le rôle de l'utilisateur. Par défaut, on peut lui attribuer le rôle "ROLE_USER"
         return array($this->role ?? 'ROLE_USER');
     }
 
@@ -134,12 +132,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getSalt(): ?string
     {
-        return null; // inutile avec bcrypt ou auto hasher
+        return null; 
     }
 
     public function eraseCredentials(): void
     {
-        // Si vous stockez des informations sensibles temporairement (ex. : un token de réinitialisation de mot de passe), supprimez-le ici
+        
     }
 
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Recette::class)]
@@ -147,12 +145,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->recettes = new ArrayCollection(); // On initialise avec une ArrayCollection
+        $this->recettes = new ArrayCollection();
     }
 
     public function getRecettes(): Collection
     {
-        return $this->recettes; // Doctrine retourne une PersistentCollection, mais c'est une sous-classe de Collection
+        return $this->recettes;
     }
 
     public function addRecette(Recette $recette): self

@@ -1,5 +1,4 @@
 <?php
-// src/Controller/InscriptionController.php
 
 namespace App\Controller;
 
@@ -31,7 +30,6 @@ class InscriptionController extends AbstractController
             $em->persist($utilisateur);
             $em->flush();
 
-            // Rediriger vers la page de connexion après l'inscription
             return $this->redirectToRoute('app_login');
         }
 

@@ -14,12 +14,10 @@ class Commentaire
     #[ORM\Column]
     private ?int $id = null;
 
-    // Jointure avec Utilisateur
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "id_utilisateur", referencedColumnName: "id", nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
-    // Jointure avec Recette
     #[ORM\ManyToOne(targetEntity: Recette::class)]
     #[ORM\JoinColumn(name: "id_recette", referencedColumnName: "id", nullable: false)]
     private ?Recette $recette = null;

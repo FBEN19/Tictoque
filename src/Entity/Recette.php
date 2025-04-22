@@ -28,16 +28,13 @@ class Recette
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date_creation = null;
 
-    // Jointure avec Utilisateur
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: "id_utilisateur", referencedColumnName: "id", nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
-    // Déclaration de la propriété $commentaires avant le constructeur
     #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Commentaire::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $commentaires;
 
-    // Déclaration des autres propriétés
     #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Etape::class, cascade: ['persist', 'remove'])]
     private Collection $etapes;
 
@@ -52,12 +49,11 @@ class Recette
 
     public function __construct()
     {
-        // Initialisation des propriétés
         $this->etapes = new ArrayCollection();
         $this->detenir = new ArrayCollection();
         $this->utiliser = new ArrayCollection();
         $this->notes = new ArrayCollection();
-        $this->commentaires = new ArrayCollection();  // Initialisation de la propriété $commentaires
+
     }
 
     public function getId(): ?int
@@ -241,7 +237,7 @@ class Recette
             $somme += $note->getNote();
         }
 
-        return round($somme / count($notes), 2); // moyenne arrondie à 2 décimales
+        return round($somme / count($notes), 2);
     }
 
     public function getCommentaires(): Collection

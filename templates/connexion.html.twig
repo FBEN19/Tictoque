@@ -14,7 +14,6 @@
         {% endif %}
 
         <form action="{{ path('app_login') }}" method="post">
-            <!-- Email -->
             <div class="mb-3">
                 <label for="email" class="form-label">Adresse e-mail</label>
                 <input type="email" name="_username" id="email" class="form-control"
@@ -22,7 +21,6 @@
                        value="{{ last_username }}" required>
             </div>
 
-            <!-- Mot de passe -->
             <div class="mb-3">
                 <label for="password" class="form-label">Mot de passe</label>
                 <input type="password" name="_password" id="password"
@@ -30,7 +28,6 @@
                        placeholder="Entrez votre mot de passe" required>
             </div>
 
-            <!-- Bouton de connexion -->
             <div class="text-center mt-4">
                 <button type="submit" class="btn"
                         style="background-color: #F4A261; color: white; width: 100%;">
