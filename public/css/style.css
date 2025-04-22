@@ -34,3 +34,33 @@ body{
     font-size: 24px;
     float: right;
 }
+
+.star-rating i {
+    color: #F4A261;
+    font-size: 1.5rem;
+}
+
+.etape, .commentaire {
+    border-left: 4px solid #F4A261;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.ustensile-image{
+    width: 20px;
+    height: 20px;
+}
+
+.li-spacing {
+    margin-left:200px;
+    margin-bottom: 10px;
+}

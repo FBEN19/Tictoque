@@ -20,6 +20,11 @@ use App\Entity\Etape;
 use App\Form\EtapeType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use App\Entity\Commentaire;
+use App\Entity\Note;
+use App\Form\CommentaireType;
+use App\Form\NoteType;
 class RecetteController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
@@ -149,4 +154,62 @@ class RecetteController extends AbstractController
         ]);
     }
 
+
+    #[Route('/recette/{id}', name: 'app_afficher_recette')]
+    public function afficher(
+        Recette $recette,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        NoteRepository $noteRepository
+    ): Response {
+        // Vérifier si l'utilisateur a déjà noté cette recette
+        $noteExistante = $noteRepository->findOneBy([
+            'utilisateur' => $this->getUser(),
+            'recette' => $recette
+        ]);
+
+        $formNote = null;
+        $formCommentaire = null;
+
+        if ($this->getUser()) {
+        // Formulaire de note
+            $note = new Note();
+            $formNote = $this->createForm(NoteType::class, $note);
+            $formNote->handleRequest($request);
+
+            if (!$noteExistante && $formNote->isSubmitted() && $formNote->isValid()) {
+                $note->setUtilisateur($this->getUser());
+                $note->setRecette($recette);
+                $entityManager->persist($note);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
+            }
+
+            // Formulaire de commentaire
+            $commentaire = new Commentaire();
+            $formCommentaire = $this->createForm(CommentaireType::class, $commentaire);
+            $formCommentaire->handleRequest($request);
+
+            if ($formCommentaire->isSubmitted() && $formCommentaire->isValid()) {
+                $commentaire->setUtilisateur($this->getUser());
+                $commentaire->setRecette($recette);
+                $commentaire->setDateCommentaire(new \DateTimeImmutable());
+                $entityManager->persist($commentaire);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
+            }
+        }
+        // Moyenne des notes
+        $moyenne = $noteRepository->calculerNoteMoyennePourRecette($recette);
+
+        return $this->render('info-recette.html.twig', [
+            'recette' => $recette,
+            'formNote' => $formNote ? $formNote->createView() : null,
+            'formCommentaire' => $formCommentaire ? $formCommentaire->createView() : null,
+            'moyenne' => $moyenne,
+            'note_deja_donnee' => $noteExistante !== null
+        ]);
+    }
 }

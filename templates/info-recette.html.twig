@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ recette.titre }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-6">
+        <img src="{{ asset('images/recettes/' ~ recette.image) }}" alt="{{ recette.titre }}" class="img-fluid rounded shadow" style="height:350px; width:100%; object-fit: cover;">
+    </div>
+
+    <div class="col-md-6">
+    <br>
+        <h1 class="fw-bold text-uppercase">{{ recette.titre }}</h1>
+        <p class="lead">{{ recette.description }}</p>
+
+        <div class="my-3">
+            <strong>Note moyenne :</strong>
+            {% if moyenne %}
+                <span class="star-rating">
+                    {% for i in 1..5 %}
+                        <i class="fas fa-star{% if i > moyenne %}-o{% endif %}"></i>
+                    {% endfor %}
+                    ({{ moyenne|number_format(1, '.', ',') }}/5)
+                </span>
+            {% else %}
+                <em>Pas encore de note</em>
+            {% endif %}
+        </div>
+
+        {% if app.user %}
+            {% if not note_deja_donnee %}
+                <div class="my-3">
+                    <strong>Notez cette recette :</strong>
+                    {{ form_start(formNote, {'attr': {'id': 'form-note'}}) }}
+
+                    {{ form_widget(formNote.note, {
+                        'attr': {
+                            'class': 'd-none',
+                            'id': 'note_note'
+                        }
+                    }) }}
+
+                    <div class="d-flex gap-2">
+                        {% for i in 1..5 %}
+                            <input type="radio" class="btn-check" name="note_etoile" id="note_{{ i }}" value="{{ i }}">
+                            <label class="btn btn-outline-warning px-2 py-1" for="note_{{ i }}">
+                                <i class="fas fa-star"></i>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    {{ form_end(formNote) }}
+                </div>
+            {% else %}
+                <p class="text-success mt-3">Vous avez déjà noté cette recette, merci !</p>
+            {% endif %}
+        {% else %}
+            <p class="text-muted">Connectez-vous pour noter cette recette.</p>
+        {% endif %}
+
+        <div class="mt-4">
+            <strong>Ustensiles :</strong>
+            <ul>
+            {% for ustensile in recette.ustensiles %}
+                <div class="ustensile">
+                    {% if ustensile.nom starts with 'http' %}
+                        <img src="{{ ustensile.nom }}" alt="{{ ustensile.nom }}" class="ustensile-image">
+                    {% else %}
+                        <i class="{{ ustensile.nom }}"></i>
+                    {% endif %}
+                    <span>{{ ustensile.description }}</span>
+                </div>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<h2><i class="fas fa-carrot"></i> Ingrédients</h2>
+<ul class="d-flex flex-wrap">
+    {% for detenir in recette.detenir %}
+        <li class="li-spacing">{{ detenir.quantite }} {{ detenir.ingredient.nom }}</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<h2><i class="fas fa-list-ol"></i> Étapes</h2>
+<div>
+    {% for etape in recette.etapes %}
+        <div class="etape">
+            <h5>Étape {{ loop.index }}</h5>
+            <p>{{ etape.description }}</p>
+        </div>
+    {% endfor %}
+</div>
+
+<hr>
+
+<h2><i class="bi bi-chat-dots"></i> Commentaires</h2>
+
+{% if app.user %}
+    <div class="mt-5">
+        <h4>Laisser un commentaire</h4>
+        {{ form_start(formCommentaire) }}
+            <div class="mb-3">
+                {{ form_label(formCommentaire.texte) }}
+                {{ form_widget(formCommentaire.texte, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <button type="submit" class="btn text-white" style="background-color: #F4A261;">Envoyer</button>
+        {{ form_end(formCommentaire) }}
+    </div>
+{% else %}
+    <p class="text-muted">Connectez-vous pour laisser un commentaire.</p>
+{% endif %}
+
+<br>
+<div>
+    {% for commentaire in recette.commentaires %}
+        <div class="commentaire">
+            <div class="d-flex justify-content-between mb-1">
+                <strong>{{ commentaire.utilisateur.nom }}</strong>
+                <span class="text-muted">{{ commentaire.dateCommentaire|date('d/m/Y') }}</span>
+            </div>
+            <p>{{ commentaire.texte }}</p>
+        </div>
+    {% else %}
+        <p>Aucun commentaire pour le moment.</p>
+    {% endfor %}
+</div>
+
+<script src="{{ asset('js/note.js') }}"></script>
+{% endblock %}

@@ -16,28 +16,30 @@
             {% for data in resultats %}
                 {% set recette = data.recette %}
                 {% set moyenne = data.moyenne %}
-                <div class="col">
-                    <div class="card border-0 shadow-sm">
-                        <div class="position-relative">
-                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
-                        </div>
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ recette.titre }}</h5>
-                            <p class="mb-0">
-                                <span class="text-warning">
-                                    {% for i in 1..5 %}
-                                        {% if i <= moyenne %}
-                                            <i class="fa-solid fa-star"></i>
-                                        {% else %}
-                                            <i class="fa-regular fa-star"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </span>
-                                {{ moyenne }}/5
-                            </p>
+                <a href="{{ path('app_afficher_recette', {'id': recette.id}) }}" class="text-decoration-none text-dark">
+                    <div class="col">
+                        <div class="card border-0 shadow-sm">
+                            <div class="position-relative">
+                                <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ recette.titre }}</h5>
+                                <p class="mb-0">
+                                    <span class="text-warning">
+                                        {% for i in 1..5 %}
+                                            {% if i <= moyenne %}
+                                                <i class="fa-solid fa-star"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    {{ moyenne }}/5
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             {% else %}
                 <p>Aucune recette trouvée.</p>
             {% endfor %}
@@ -54,18 +56,27 @@
     <div class="mb-3">
         <label class="form-label">Note minimale :</label>
         <select class="form-select" name="min_rating" id="minRating">
-            <option value="1">⭐</option>
-            <option value="2">⭐⭐</option>
-            <option value="3">⭐⭐⭐</option>
-            <option value="4">⭐⭐⭐⭐</option>
-            <option value="5">⭐⭐⭐⭐⭐</option>
+            {% set selected_note = app.request.get('min_rating') %}
+            <option value="0" {{ selected_note == '0' ? 'selected' : '' }}>Non noté</option>
+            <option value="1" {{ selected_note == '1' ? 'selected' : '' }}>⭐</option>
+            <option value="2" {{ selected_note == '2' ? 'selected' : '' }}>⭐⭐</option>
+            <option value="3" {{ selected_note == '3' ? 'selected' : '' }}>⭐⭐⭐</option>
+            <option value="4" {{ selected_note == '4' ? 'selected' : '' }}>⭐⭐⭐⭐</option>
+            <option value="5" {{ selected_note == '5' ? 'selected' : '' }}>⭐⭐⭐⭐⭐</option>
         </select>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Exclure un ingrédient :</label>
         <div class="input-group">
-            <input type="text" class="form-control" name="exclude_ingredient" id="excludeIngredient" placeholder="Exemple : chocolat">
+            <input
+                type="text"
+                class="form-control"
+                name="exclude_ingredient"
+                id="excludeIngredient"
+                placeholder="Exemple : chocolat"
+                value="{{ app.request.get('exclude_ingredient') }}"
+            >
             <button type="button" class="btn btn-danger" id="excludeBtn">Exclure</button>
         </div>
     </div>
@@ -73,9 +84,9 @@
     <div class="mb-3">
         <label class="form-label">Trier par :</label>
         <select class="form-select" name="sort_order" id="sortOrder">
-            <option value="newest">Plus récent</option>
-            <option value="oldest">Plus ancien</option>
-            <option value="rating">Meilleure note</option>
+            <option value="newest" {{ app.request.get('sort_order') == 'newest' ? 'selected' : '' }}>Plus récent</option>
+            <option value="oldest" {{ app.request.get('sort_order') == 'oldest' ? 'selected' : '' }}>Plus ancien</option>
+            <option value="rating" {{ app.request.get('sort_order') == 'rating' ? 'selected' : '' }}>Meilleure note</option>
         </select>
     </div>
 
@@ -84,6 +95,6 @@
 </div>
 
 
-    <script src="{{ asset('js/profil.js') }}"></script>
+    <script src="{{ asset('js/recherche.js') }}"></script>
 
 {% endblock %}

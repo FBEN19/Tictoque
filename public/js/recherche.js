@@ -7,7 +7,7 @@ const submitFormOnChange = () => {
 };
 
 minRatingSelect.addEventListener('change', submitFormOnChange);
-sortOrderSelect.addEventListener('change', submitFormOnChange);s
+sortOrderSelect.addEventListener('change', submitFormOnChange);
 document.getElementById('excludeBtn').addEventListener('click', function() {
     const excludeIngredient = document.getElementById('excludeIngredient').value;
     if (excludeIngredient) {
@@ -27,9 +27,4 @@ document.getElementById('filterBtn').addEventListener('click', function() {
 
 document.getElementById('closeFilter').addEventListener('click', function() {
     document.getElementById('filterSidebar').classList.remove('show');
-});
-
-document.getElementById('excludeBtn').addEventListener('click', function() {
-    let ingredient = document.querySelector('[name="exclude_ingredient"]').value;
-    alert('Ingrédient exclu : ' + ingredient);
 });
