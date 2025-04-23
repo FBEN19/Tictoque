@@ -75,18 +75,8 @@
 
         {# Encadré anecdote en bas de page #}
         <div class="alert alert-info mt-5 mb-0">
-            {% if fruit %}
-                <h1>Fruit du jour : {{ fruit.name|capitalize }}</h1>
-                <ul>
-                    <li><strong>Calories :</strong> {{ fruit.nutritions.calories }}</li>
-                    <li><strong>Graisses :</strong> {{ fruit.nutritions.fat }}g</li>
-                    <li><strong>Sucre :</strong> {{ fruit.nutritions.sugar }}g</li>
-                    <li><strong>Glucides :</strong> {{ fruit.nutritions.carbohydrates }}g</li>
-                    <li><strong>Protéines :</strong> {{ fruit.nutritions.protein }}g</li>
-                </ul>
-            {% else %}
-                <p>Aucun fruit n'a pu être chargé 😢</p>
-            {% endif %}
+            <strong>Le saviez-vous ?</strong><br>
+            {{ anecdote }}
                     </div>
                 </div>
             </div>

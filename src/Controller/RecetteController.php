@@ -25,23 +25,23 @@ use App\Entity\Commentaire;
 use App\Entity\Note;
 use App\Form\CommentaireType;
 use App\Form\NoteType;
-use App\Service\FruitService;
+use App\Service\AnecdoteService;
 class RecetteController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
     public function index(
         RecetteRepository $recetteRepository,
         NoteRepository $noteRepository,
-        FruitService $fruitService
+        AnecdoteService $anecdoteService
     ): Response {
-        $fruit = $fruitService->getFruitDuJour();
+        $anecdote = $anecdoteService->getAnecdote();
         $topRecettesRaw = $recetteRepository->findTopRecettesAvecNotes(4);
         $topRecettes = [];
 
         foreach ($topRecettesRaw as $item) {
             /** @var \App\Entity\Recette $recette */
-            $recette = $item[0];
-            $recette->noteMoyenne = round($item['moyenne'] ?? 0, 1);
+            $recette = $item[0]; // l'entité Recette
+            $recette->noteMoyenne = round($item['moyenne'] ?? 0, 1); // on ajoute noteMoyenne dynamiquement
             $topRecettes[] = $recette;
         }
 
@@ -53,7 +53,7 @@ class RecetteController extends AbstractController
         return $this->render('index.html.twig', [
             'topRecettes' => $topRecettes,
             'dernieresRecettes' => $dernieresRecettes,
-            'fruit' => $fruit,
+            'anecdote' => $anecdote,
         ]);
     }
 
