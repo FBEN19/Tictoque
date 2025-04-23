@@ -66,7 +66,6 @@ class RecetteController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                 }
 
                 $recette->setImage($newFilename);
@@ -90,7 +89,6 @@ class RecetteController extends AbstractController
             $em->persist($recette);
             $em->flush();
 
-            $this->addFlash('success', 'Recette ajoutée avec succès !');
             return $this->redirectToRoute('app_profil');
         }
 
@@ -128,7 +126,6 @@ class RecetteController extends AbstractController
                     );
                     $recette->setImage($newFilename);
                 } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                 }
             }
 
@@ -144,7 +141,6 @@ class RecetteController extends AbstractController
 
             $em->flush();
 
-            $this->addFlash('success', 'Recette modifiée avec succès !');
             return $this->redirectToRoute('app_profil');
         }
 
@@ -162,7 +158,6 @@ class RecetteController extends AbstractController
         EntityManagerInterface $entityManager,
         NoteRepository $noteRepository
     ): Response {
-        // Vérifier si l'utilisateur a déjà noté cette recette
         $noteExistante = $noteRepository->findOneBy([
             'utilisateur' => $this->getUser(),
             'recette' => $recette
@@ -172,7 +167,6 @@ class RecetteController extends AbstractController
         $formCommentaire = null;
 
         if ($this->getUser()) {
-        // Formulaire de note
             $note = new Note();
             $formNote = $this->createForm(NoteType::class, $note);
             $formNote->handleRequest($request);
@@ -180,13 +174,13 @@ class RecetteController extends AbstractController
             if (!$noteExistante && $formNote->isSubmitted() && $formNote->isValid()) {
                 $note->setUtilisateur($this->getUser());
                 $note->setRecette($recette);
+                $note->setDateNote(new \DateTimeImmutable());
                 $entityManager->persist($note);
                 $entityManager->flush();
 
                 return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
             }
 
-            // Formulaire de commentaire
             $commentaire = new Commentaire();
             $formCommentaire = $this->createForm(CommentaireType::class, $commentaire);
             $formCommentaire->handleRequest($request);
@@ -201,7 +195,6 @@ class RecetteController extends AbstractController
                 return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
             }
         }
-        // Moyenne des notes
         $moyenne = $noteRepository->calculerNoteMoyennePourRecette($recette);
 
         return $this->render('info-recette.html.twig', [

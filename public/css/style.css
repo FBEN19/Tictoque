@@ -55,6 +55,14 @@ body{
     gap: 0.3rem;
 }
 
+.liste-admin{
+    border-left: 4px solid #F4A261;
+    background-color: #fff;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+}
+
 .ustensile-image{
     width: 20px;
     height: 20px;
@@ -63,4 +71,13 @@ body{
 .li-spacing {
     margin-left:200px;
     margin-bottom: 10px;
+}
+
+.lien-hover:hover {
+    text-decoration: underline !important;
+}
+
+.thead-orange {
+    background-color: #F4A261;
+    color: white;
 }

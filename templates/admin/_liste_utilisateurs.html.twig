@@ -1,0 +1,61 @@
+<table class="table table-striped table-hover text-center align-middle">
+    <thead class="thead-orange">
+        <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Date d’inscription</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for utilisateur in pagination %}
+            <tr>
+                <td>{{ utilisateur.nom }}</td>
+                <td>{{ utilisateur.email }}</td>
+                <td>{{ utilisateur.role }}</td>
+                <td>{{ utilisateur.dateInscription|date('d/m/Y') }}</td>
+                <td>
+                    <a href="{{ path('app_admin_utilisateur_modifier', {id: utilisateur.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+
+                    <form action="{{ path('app_admin_utilisateur_supprimer', {id: utilisateur.id}) }}"
+                          method="POST"
+                          style="display:inline-block;"
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ utilisateur.id) }}">
+                        <button class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Aucun utilisateur trouvé.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# Pagination AJAX #}
+{% if pagination.pageCount > 1 %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if pagination.currentPageNumber == 1 %}disabled{% endif %}">
+                <a class="page-link pagination-link" href="#" data-page="{{ pagination.currentPageNumber - 1 }}">
+                    &laquo;
+                </a>
+            </li>
+
+            {% for i in 1..pagination.pageCount %}
+                <li class="page-item {% if i == pagination.currentPageNumber %}active{% endif %}">
+                    <a class="page-link pagination-link" href="#" data-page="{{ i }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            <li class="page-item {% if pagination.currentPageNumber == pagination.pageCount %}disabled{% endif %}">
+                <a class="page-link pagination-link" href="#" data-page="{{ pagination.currentPageNumber + 1 }}">
+                    &raquo;
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}

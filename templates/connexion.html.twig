@@ -7,11 +7,11 @@
     <div class="bg-white shadow-sm p-5 rounded" style="max-width: 800px; margin: 0 auto;">
         <h2 class="text-center mb-4" style="color: #F4A261;">Connexion</h2>
 
-        {% if error %}
-            <div class="alert alert-danger text-center">
-                {{ error.messageKey|trans(error.messageData, 'security') }}
-            </div>
-        {% endif %}
+        <div class="container">
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+        </div>
 
         <form action="{{ path('app_login') }}" method="post">
             <div class="mb-3">

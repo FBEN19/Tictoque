@@ -46,12 +46,10 @@ class ProfilController extends AbstractController
         $email = $request->request->get('email');
 
         if (empty($nom)) {
-            $this->addFlash('error', 'Le nom d\'utilisateur ne peut pas être vide.');
             return $this->redirectToRoute('app_profil');
         }
 
         if (empty($email)) {
-            $this->addFlash('error', 'L\'email ne peut pas être vide.');
             return $this->redirectToRoute('app_profil');
         }
 
@@ -61,7 +59,6 @@ class ProfilController extends AbstractController
         $em->persist($utilisateur);
         $em->flush();
         
-        $this->addFlash('success', 'Profil mis à jour avec succès.');
         return $this->redirectToRoute('app_profil');
     }
 
@@ -126,7 +123,6 @@ class ProfilController extends AbstractController
         $em->remove($recette);
         $em->flush();
 
-        $this->addFlash('success', 'Recette supprimée avec succès.');
         return $this->redirectToRoute('app_profil');
     }
 }

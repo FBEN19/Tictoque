@@ -5,7 +5,7 @@
     <div class="bg-white shadow-sm p-4 rounded">
         <h1 class="text-center fw-bold">Top recettes</h1>
         <div class="text-end mt-3">
-            <a href="#" class="fw-bold text-decoration-none" style="color:#F4A261;">
+            <a href="#" class="fw-bold text-decoration-none lien-hover" style="color:#F4A261;">
                 Voir plus <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -38,7 +38,7 @@
         
         <h2 class="text-center fw-bold m-5">Dernières recettes publiées</h2>
         <div class="text-end mt-3">
-            <a href="#" class="fw-bold text-decoration-none" style="color:#F4A261;">
+            <a href="{{ path('app_recherche', {min_rating: 0, exclude_ingredient: '', sort_order: 'newest'}) }}" class="fw-bold text-decoration-none lien-hover" style="color:#F4A261;">
                 Voir plus <i class="bi bi-arrow-right"></i>
             </a>
         </div>

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>Gestion des utilisateurs</h2>
+
+    <input id="barre-recherche" type="text" class="form-control mb-4" placeholder="Rechercher un utilisateur..." data-url="{{ path('app_admin_recherche_utilisateur') }}">
+
+    <div id="contenu-utilisateurs">
+        {% include 'admin/_liste_utilisateurs.html.twig' %}
+    </div>
+</div>
+<script src="{{ asset('js/barreRechercheUtilisateurs.js') }}"></script>
+{% endblock %}

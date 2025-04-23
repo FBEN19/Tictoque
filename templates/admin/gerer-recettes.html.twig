@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+{% block content %}
+    <h1 class="mb-4">Gestion des Recettes</h1>
+
+    <input type="text" id="barre-recherche" class="form-control mb-3" data-url="{{ path('app_admin_recherche_recette') }}" placeholder="Rechercher une recette...">
+    <div id="recipe-list">
+        {% include 'admin/_liste_recettes.html.twig' with { pagination: pagination } %}
+    </div>
+
+    {% if pagination.pageCount > 1 %}
+        <nav>
+            <ul class="pagination justify-content-center">
+
+                {# Précédent #}
+                <li class="page-item {% if pagination.currentPageNumber == 1 %}disabled{% endif %}">
+                    <a class="page-link pagination-link"
+                    href="#"
+                    data-page="{{ pagination.currentPageNumber - 1 }}"
+                    aria-label="Précédent">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                {# Liens de pages #}
+                {% for i in 1..pagination.pageCount %}
+                    <li class="page-item {% if pagination.currentPageNumber == i %}active{% endif %}">
+                        <a class="page-link pagination-link"
+                        href="#"
+                        data-page="{{ i }}">{{ i }}</a>
+                    </li>
+                {% endfor %}
+
+                {# Suivant #}
+                <li class="page-item {% if pagination.currentPageNumber == pagination.pageCount %}disabled{% endif %}">
+                    <a class="page-link pagination-link"
+                    href="#"
+                    data-page="{{ pagination.currentPageNumber + 1 }}"
+                    aria-label="Suivant">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+    <script src="{{ asset('js/barreRechercheRecettes.js') }}"></script>
+
+{% endblock %}

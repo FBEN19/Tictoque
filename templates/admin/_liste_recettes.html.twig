@@ -1,0 +1,22 @@
+{% for recette in pagination %}
+    <div class="recipe-card d-flex justify-content-between liste-admin">
+        <div>
+            <h5>{{ recette.titre }}</h5>
+            <p class="recipe-description">{{ recette.description|length > 100 ? recette.description|slice(0, 100) ~ '...' : recette.description }}</p>
+            <small>Créée le : {{ recette.dateCreation ? recette.dateCreation|date('d/m/Y') : 'Inconnue' }} par : {{ recette.utilisateur.nom }}</small>
+        </div>
+        <div class="d-flex align-items-center">
+            <a href="{{ path('modifier_recette', {'id': recette.id}) }}" class="btn btn-sm btn-warning me-2">
+                <i class="bi bi-pencil"></i> Modifier
+            </a>
+            <form action="{{ path('app_supprimer_recette', {id: recette.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette recette ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ recette.id) }}">
+                <button type="submit" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+{% else %}
+    <p>Aucune recette trouvée.</p>
+{% endfor %}

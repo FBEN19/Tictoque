@@ -85,7 +85,7 @@
 <h2><i class="fas fa-carrot"></i> Ingrédients</h2>
 <ul class="d-flex flex-wrap">
     {% for detenir in recette.detenir %}
-        <li class="li-spacing">{{ detenir.quantite }} {{ detenir.ingredient.nom }}</li>
+        <li class="li-spacing">{{ detenir.quantite }} {{ detenir.unite }} {{ detenir.ingredient.nom }}</li>
     {% endfor %}
 </ul>
 
