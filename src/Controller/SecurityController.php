@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SecurityController extends AbstractController
 {
@@ -59,7 +60,7 @@ class SecurityController extends AbstractController
                 ->from('no-reply@tictoque.bmxbox.fr')
                 ->to($email)
                 ->subject('Réinitialisation de votre mot de passe')
-                ->html("<p>Bonjour,</p><p>Cliquez sur ce lien pour réinitialiser votre mot de passe :</p><p><a href='" . $this->generateUrl('reinitialiser_mot_de_passe', ['token' => $jeton], true) . "'>Réinitialiser</a></p>");
+                ->html("<p>Bonjour,</p><p>Cliquez sur ce lien pour réinitialiser votre mot de passe :</p><p><a href='" . $this->generateUrl('reinitialiser_mot_de_passe', ['token' => $jeton], UrlGeneratorInterface::ABSOLUTE_URL) . "'>Réinitialiser</a></p>");
                 $mailer->send($emailMessage);
                 $this->addFlash('success', 'Un email de réinitialisation a été envoyé.');
             } else {
