@@ -58,7 +58,7 @@ class RecetteController extends AbstractController
     }
 
     #[Route('/ajouter-recette', name: 'ajouter_recette')]
-    public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, AnecdoteService $anecdoteService): Response
+    public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $recette = new Recette();
         $form = $this->createForm(RecetteType::class, $recette);
