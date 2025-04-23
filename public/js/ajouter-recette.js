@@ -6,7 +6,6 @@ function ajouterFormulaire(type) {
     newForm.classList.add('row', 'g-2', 'mb-2');
     newForm.innerHTML = prototype.replace(/__name__/g, index);
 
-    // Ajouter la classe 'form-control' aux balises input, select et textarea
     const elements = newForm.querySelectorAll('input, select, textarea');
     elements.forEach(el => {
         el.classList.add('form-control');
@@ -15,7 +14,7 @@ function ajouterFormulaire(type) {
     if (type === 'etapes') {
         const numeroInput = newForm.querySelector('[id*="_numeroEtape"]');
         if (numeroInput) {
-            numeroInput.value = index + 1; // commence à 1 puis +1 à chaque ajout
+            numeroInput.value = index + 1;
         }
     }
 

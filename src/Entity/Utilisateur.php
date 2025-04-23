@@ -37,6 +37,21 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo_profil = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $jetonReinitialisation = null;
+
+    public function getJetonReinitialisation(): ?string
+    {
+        return $this->jetonReinitialisation;
+    }
+
+    public function setJetonReinitialisation(?string $jetonReinitialisation): static
+    {
+        $this->jetonReinitialisation = $jetonReinitialisation;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

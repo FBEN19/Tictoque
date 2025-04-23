@@ -40,4 +40,18 @@ class RecetteRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findTopRecettesAvecNotes(int $limite = 4): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.notes', 'n')
+            ->addSelect('AVG(n.note) AS moyenne')
+            ->addSelect('COUNT(n.id) AS nombreNotes')
+            ->groupBy('r.id')
+            ->orderBy('moyenne', 'DESC')
+            ->addOrderBy('nombreNotes', 'DESC')
+            ->setMaxResults($limite)
+            ->getQuery()
+            ->getResult();
+    }
 }

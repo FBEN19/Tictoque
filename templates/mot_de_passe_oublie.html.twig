@@ -1,0 +1,25 @@
+{# templates/securite/mot_de_passe_oublie.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublié{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Mot de passe oublié</h2>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post">
+        <div class="form-group">
+            <label for="email">Votre adresse email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
+        <button class="btn btn-primary mt-3">Envoyer le lien</button>
+    </form>
+</div>
+{% endblock %}

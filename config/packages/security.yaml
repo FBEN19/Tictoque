@@ -29,6 +29,9 @@ security:
         # On autorise l’accès sans être connecté aux pages suivantes :
         - { path: ^/connexion, roles: PUBLIC_ACCESS }
         - { path: ^/inscription, roles: PUBLIC_ACCESS }
+        - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
+        - { path: ^/reinitialiser-mot-de-passe/.*, roles: PUBLIC_ACCESS }
+        - { path: ^/anecdote, roles: PUBLIC_ACCESS }
         - { path: ^/recherche, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS }  # page d'accueil
         - { path: ^/css, roles: PUBLIC_ACCESS } # pour le CSS si tu en as en public

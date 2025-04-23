@@ -25,28 +25,40 @@ use App\Entity\Commentaire;
 use App\Entity\Note;
 use App\Form\CommentaireType;
 use App\Form\NoteType;
+use App\Service\FruitService;
 class RecetteController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(RecetteRepository $recetteRepository, NoteRepository $noteRepository): Response
-    {
-        $topRecettes = $recetteRepository->findBy([], ['date_creation' => 'DESC'], 4);
+    public function index(
+        RecetteRepository $recetteRepository,
+        NoteRepository $noteRepository,
+        FruitService $fruitService
+    ): Response {
+        $fruit = $fruitService->getFruitDuJour();
+        $topRecettesRaw = $recetteRepository->findTopRecettesAvecNotes(4);
+        $topRecettes = [];
+
+        foreach ($topRecettesRaw as $item) {
+            /** @var \App\Entity\Recette $recette */
+            $recette = $item[0];
+            $recette->noteMoyenne = round($item['moyenne'] ?? 0, 1);
+            $topRecettes[] = $recette;
+        }
 
         $dernieresRecettes = $recetteRepository->findBy([], ['date_creation' => 'DESC'], 4);
-
-        foreach ($topRecettes as $recette) {
-            $noteMoyenne = $noteRepository->calculerNoteMoyennePourRecette($recette);
-
+        foreach ($dernieresRecettes as $recette) {
+            $recette->noteMoyenne = round($noteRepository->calculerNoteMoyennePourRecette($recette), 1);
         }
 
         return $this->render('index.html.twig', [
             'topRecettes' => $topRecettes,
             'dernieresRecettes' => $dernieresRecettes,
+            'fruit' => $fruit,
         ]);
     }
 
     #[Route('/ajouter-recette', name: 'ajouter_recette')]
-    public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, AnecdoteService $anecdoteService): Response
     {
         $recette = new Recette();
         $form = $this->createForm(RecetteType::class, $recette);
@@ -205,4 +217,5 @@ class RecetteController extends AbstractController
             'note_deja_donnee' => $noteExistante !== null
         ]);
     }
+
 }

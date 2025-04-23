@@ -44,10 +44,13 @@ class NoteRepository extends ServiceEntityRepository
     public function calculerNoteMoyennePourRecette($recette)
     {
         $qb = $this->createQueryBuilder('n')
-            ->select('AVG(n.note)')  // Calcul de la moyenne des notes
+            ->select('AVG(n.note)')
             ->where('n.recette = :recette')
             ->setParameter('recette', $recette);
 
-        return $qb->getQuery()->getSingleScalarResult();  // Retourne la moyenne
+        return $qb->getQuery()->getSingleScalarResult();
     }
+
+
+    
 }

@@ -11,31 +11,33 @@
         </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for recette in topRecettes %}
-                <div class="col">
-                    <div class="card border-0 shadow-sm">
-                        <div class="position-relative">
-                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
-                        </div>
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ recette.titre }}</h5>
-                            <p class="mb-0">
-                                <span class="text-warning">
-                                    {% for i in 1..5 %}
-                                        {% if i <= recette.noteMoyenne %}
-                                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
-                                        {% else %}
-                                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </span>
-                                {{ recette.noteMoyenne }}/5
-                            </p>
+                <a href="{{ path('app_afficher_recette', {'id': recette.id}) }}" class="text-decoration-none text-dark">
+                    <div class="col">
+                        <div class="card border-0 shadow-sm">
+                            <div class="position-relative">
+                                <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ recette.titre }}</h5>
+                                <p class="mb-0">
+                                    <span class="text-warning">
+                                        {% for i in 1..5 %}
+                                            {% if i <= recette.noteMoyenne %}
+                                                <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    {{ recette.noteMoyenne }}/5
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             {% endfor %}
         </div>
-        
+
         <h2 class="text-center fw-bold m-5">Dernières recettes publiées</h2>
         <div class="text-end mt-3">
             <a href="{{ path('app_recherche', {min_rating: 0, exclude_ingredient: '', sort_order: 'newest'}) }}" class="fw-bold text-decoration-none lien-hover" style="color:#F4A261;">
@@ -44,30 +46,48 @@
         </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for recette in dernieresRecettes %}
-                <div class="col">
-                    <div class="card border-0 shadow-sm">
-                        <div class="position-relative">
-                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
-                        </div>
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ recette.titre }}</h5>
-                            <p class="mb-0">
-                                <span class="text-warning">
-                                    {% for i in 1..5 %}
-                                        {% if i <= recette.noteMoyenne %}
-                                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
-                                        {% else %}
-                                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </span>
-                                {{ recette.noteMoyenne }}/5
-                            </p>
+                <a href="{{ path('app_afficher_recette', {'id': recette.id}) }}" class="text-decoration-none text-dark">
+                    <div class="col">
+                        <div class="card border-0 shadow-sm">
+                            <div class="position-relative">
+                                <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ recette.titre }}</h5>
+                                <p class="mb-0">
+                                    <span class="text-warning">
+                                        {% for i in 1..5 %}
+                                            {% if i <= recette.noteMoyenne %}
+                                                <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    {{ recette.noteMoyenne }}/5
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             {% endfor %}
         </div>
-    </div>
-</div>
+
+        {# Encadré anecdote en bas de page #}
+        <div class="alert alert-info mt-5 mb-0">
+            {% if fruit %}
+                <h1>Fruit du jour : {{ fruit.name|capitalize }}</h1>
+                <ul>
+                    <li><strong>Calories :</strong> {{ fruit.nutritions.calories }}</li>
+                    <li><strong>Graisses :</strong> {{ fruit.nutritions.fat }}g</li>
+                    <li><strong>Sucre :</strong> {{ fruit.nutritions.sugar }}g</li>
+                    <li><strong>Glucides :</strong> {{ fruit.nutritions.carbohydrates }}g</li>
+                    <li><strong>Protéines :</strong> {{ fruit.nutritions.protein }}g</li>
+                </ul>
+            {% else %}
+                <p>Aucun fruit n'a pu être chargé 😢</p>
+            {% endif %}
+                    </div>
+                </div>
+            </div>
 {% endblock %}

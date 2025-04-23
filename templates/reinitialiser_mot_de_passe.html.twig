@@ -1,0 +1,18 @@
+{# templates/securite/reinitialiser_mot_de_passe.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Réinitialiser le mot de passe{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Réinitialiser votre mot de passe</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label for="mot_de_passe">Nouveau mot de passe</label>
+            <input type="password" name="mot_de_passe" class="form-control" required>
+        </div>
+        <button class="btn btn-success mt-3">Changer le mot de passe</button>
+    </form>
+</div>
+{% endblock %}
