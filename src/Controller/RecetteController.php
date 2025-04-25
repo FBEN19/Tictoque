@@ -196,6 +196,7 @@ class RecetteController extends AbstractController
 
         $formNote = null;
         $formCommentaire = null;
+        $errorMessage = null;
 
         if ($this->getUser()) {
             $note = new Note();
@@ -219,15 +220,23 @@ class RecetteController extends AbstractController
             $formCommentaire->handleRequest($request);
 
             if ($formCommentaire->isSubmitted() && $formCommentaire->isValid()) {
-                $commentaire->setUtilisateur($this->getUser());
-                $commentaire->setRecette($recette);
-                $commentaire->setDateCommentaire(new \DateTimeImmutable());
-                $entityManager->persist($commentaire);
-                $entityManager->flush();
+                try {
+                    $commentaire->setUtilisateur($this->getUser());
+                    $commentaire->setRecette($recette);
+                    $commentaire->setDateCommentaire(new \DateTimeImmutable());
+                    $entityManager->persist($commentaire);
+                    $entityManager->flush();
 
-                $logger->info('Nouveau commentaire ajouté à la recette ID : '.$recette->getId());
+                    $logger->info('Nouveau commentaire ajouté à la recette ID : '.$recette->getId());
 
-                return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
+                    return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
+                } catch (\Doctrine\DBAL\Exception\DriverException $e) {
+                    if (strpos($e->getMessage(), 'Doublon de commentaire trouvé') !== false) {
+                        $errorMessage = 'Un doublon de commentaire a été détecté pour cette recette.';
+                    } else {
+                        $errorMessage = 'Une erreur est survenue lors de l\'ajout de votre commentaire.';
+                    }
+                }
             }
         }
 
@@ -238,7 +247,8 @@ class RecetteController extends AbstractController
             'formNote' => $formNote ? $formNote->createView() : null,
             'formCommentaire' => $formCommentaire ? $formCommentaire->createView() : null,
             'moyenne' => $moyenne,
-            'note_deja_donnee' => $noteExistante !== null
+            'note_deja_donnee' => $noteExistante !== null,
+            'errorMessage' => $errorMessage,  // Passer le message d'erreur à la vue
         ]);
     }
 }

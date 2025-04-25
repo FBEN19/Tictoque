@@ -108,6 +108,11 @@
 {% if app.user %}
     <div class="mt-5">
         <h4>Laisser un commentaire</h4>
+        {% if errorMessage %}
+            <div class="alert alert-danger">
+                {{ errorMessage }}
+            </div>
+        {% endif %}
         {{ form_start(formCommentaire) }}
             <div class="mb-3">
                 {{ form_label(formCommentaire.texte) }}
