@@ -8,7 +8,7 @@
         {{ modifier is defined and modifier ? 'Modifier la recette' : 'Ajouter une nouvelle recette' }}
     </h2>
 
-    {{ form_start(form) }}
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
         <div class="mb-3">
             {{ form_label(form.titre, 'Titre de la recette', {'attr': {'class': 'form-label'}}) }}
             {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}

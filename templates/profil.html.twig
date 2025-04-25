@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-5">
     
-    <div class="bg-white shadow-sm p-5 rounded" style="max-width: 900px; margin: 0 auto;">
+    <div class="bg-white shadow-sm p-5 rounded" style=" margin: 0 auto;">
         <div class="text-center">
             <div class="text-center position-relative">
                 <form id="form-upload" action="{{ path('upload_photo_profil') }}" method="POST" enctype="multipart/form-data">
@@ -81,7 +81,7 @@
                                         <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
                                     </div>
                                     <div class="card-body text-center">
-                                        <h5 class="card-title">{{ recette.titre }}</h5>
+                                        <h5 class="card-title">{{ recette.titre|length > 15 ? recette.titre|slice(0, 15) ~ '...' : recette.titre }}</h5>
                                         <p class="mb-2">
                                             <span class="text-warning">
                                                 {% for i in 1..5 %}

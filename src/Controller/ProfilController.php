@@ -15,8 +15,7 @@ use App\Entity\Recette;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Knp\Component\Pager\PaginatorInterface;
-
-
+use Psr\Log\LoggerInterface;
 
 class ProfilController extends AbstractController
 {
@@ -38,32 +37,39 @@ class ProfilController extends AbstractController
     }
 
     #[Route('/modifier-profil', name: 'modifier_profil')]
-    public function modifierProfil(Request $request, EntityManagerInterface $em): Response
+    public function modifierProfil(Request $request, EntityManagerInterface $em, LoggerInterface $logger): Response
     {
         $utilisateur = $this->getUser();
         
-        $nom = $request->request->get('nom');
-        $email = $request->request->get('email');
+        $nomActuel = $utilisateur->getNom();
+        $emailActuel = $utilisateur->getEmail();
 
-        if (empty($nom)) {
+        $nouveauNom = $request->request->get('nom');
+        $nouvelEmail = $request->request->get('email');
+
+        if (empty($nouveauNom) || empty($nouvelEmail)) {
             return $this->redirectToRoute('app_profil');
         }
 
-        if (empty($email)) {
-            return $this->redirectToRoute('app_profil');
-        }
+        $utilisateur->setNom($nouveauNom);
+        $utilisateur->setEmail($nouvelEmail);
 
-        $utilisateur->setNom($nom);
-        $utilisateur->setEmail($email);
-        
         $em->persist($utilisateur);
         $em->flush();
-        
+
+        $logger->info("Modification du profil de l'utilisateur : ", [
+            'id' => $utilisateur->getId(),
+            'nom_avant' => $nomActuel,
+            'nom_apres' => $nouveauNom,
+            'email_avant' => $emailActuel,
+            'email_apres' => $nouvelEmail,
+        ]);
+
         return $this->redirectToRoute('app_profil');
     }
 
     #[Route('/changer-photo', name: 'upload_photo_profil', methods: ['POST'])]
-    public function uploadPhotoProfil(Request $request, EntityManagerInterface $em): Response
+    public function uploadPhotoProfil(Request $request, EntityManagerInterface $em, LoggerInterface $logger): Response
     {
         $utilisateur = $this->getUser();
     
@@ -76,7 +82,7 @@ class ProfilController extends AbstractController
                     unlink($cheminFichier);
                 }
             }
-    
+
             $extension = $photo->guessExtension();
             $uniqueName = uniqid() . '.' . $extension;
             $photo->move($this->getParameter('photo_profil_directory'), $uniqueName);
@@ -84,13 +90,15 @@ class ProfilController extends AbstractController
             $utilisateur->setPhotoProfil($uniqueName);
             $em->persist($utilisateur);
             $em->flush();
+
+            $logger->info("Photo de profil modifiée pour : {$utilisateur->getEmail()}");
         }
     
         return $this->redirectToRoute('app_profil');
     }
 
     #[Route('/supprimer-recette/{id}', name: 'supprimer_recette')]
-    public function supprimerRecette(Recette $recette, EntityManagerInterface $em): Response
+    public function supprimerRecette(Recette $recette, EntityManagerInterface $em, LoggerInterface $logger): Response
     {
         $nomImage = $recette->getImage();
         $cheminImage = $this->getParameter('kernel.project_dir') . '/public/images/recettes/' . $nomImage;
@@ -119,6 +127,8 @@ class ProfilController extends AbstractController
         foreach ($recette->getNotes() as $note) {
             $em->remove($note);
         }
+
+        $logger->info("Recette supprimée : {$recette->getTitre()} (par {$this->getUser()->getEmail()})");
 
         $em->remove($recette);
         $em->flush();

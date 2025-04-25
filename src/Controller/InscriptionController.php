@@ -10,11 +10,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
 
 class InscriptionController extends AbstractController
 {
     #[Route('/inscription', name: 'app_register')]
-    public function register(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
+    public function register(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher, LoggerInterface $logger): Response
     {
         $utilisateur = new Utilisateur();
         $form = $this->createForm(InscriptionType::class, $utilisateur);
@@ -29,6 +30,8 @@ class InscriptionController extends AbstractController
 
             $em->persist($utilisateur);
             $em->flush();
+
+            $logger->info("Nouvelle inscription : {$utilisateur->getEmail()}");
 
             return $this->redirectToRoute('app_login');
         }

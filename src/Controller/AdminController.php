@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
-
+use Psr\Log\LoggerInterface;
 
 class AdminController extends AbstractController
 {
@@ -35,9 +35,10 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/utilisateur/supprimer/{id}', name: 'app_admin_utilisateur_supprimer', methods: ['POST'])]
-    public function supprimerUtilisateur(Utilisateur $utilisateur, EntityManagerInterface $em, Request $request): Response
+    public function supprimerUtilisateur(Utilisateur $utilisateur, EntityManagerInterface $em, Request $request, LoggerInterface $logger): Response
     {
         if ($this->isCsrfTokenValid('supprimer' . $utilisateur->getId(), $request->request->get('_token'))) {
+            $logger->info("Suppression de l'utilisateur ID {$utilisateur->getId()} ({$utilisateur->getEmail()})");
             $em->remove($utilisateur);
             $em->flush();
         }
@@ -104,16 +105,16 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/recette/supprimer/{id}', name: 'app_supprimer_recette', methods: ['POST'])]
-    public function supprimer(Recette $recette, EntityManagerInterface $em, Request $request): Response
+    public function supprimer(Recette $recette, EntityManagerInterface $em, Request $request, LoggerInterface $logger): Response
     {
         if ($this->isCsrfTokenValid('supprimer' . $recette->getId(), $request->request->get('_token'))) {
+            $logger->info("Suppression de la recette ID {$recette->getId()} ({$recette->getTitre()})");
             $em->remove($recette);
             $em->flush();
         }
 
         return $this->redirectToRoute('app_admin_recettes');
     }
-
 
     #[Route('/admin/recherche-recette', name: 'app_admin_recherche_recette')]
     public function rechercheRecette(

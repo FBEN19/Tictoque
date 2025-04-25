@@ -13,9 +13,8 @@
 
     <div class="bg-white shadow-sm p-4 rounded">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-4">
-            {% for data in resultats %}
-                {% set recette = data.recette %}
-                {% set moyenne = data.moyenne %}
+            {% for recette in resultats %}
+                {% set moyenne = recette.noteMoyenne %}
                 <a href="{{ path('app_afficher_recette', {'id': recette.id}) }}" class="text-decoration-none text-dark">
                     <div class="col">
                         <div class="card border-0 shadow-sm">
@@ -23,7 +22,7 @@
                                 <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
                             </div>
                             <div class="card-body text-center">
-                                <h5 class="card-title">{{ recette.titre }}</h5>
+                                <h5 class="card-title">{{ recette.titre|length > 20 ? recette.titre|slice(0, 20) ~ '...' : recette.titre }}</h5>
                                 <p class="mb-0">
                                     <span class="text-warning">
                                         {% for i in 1..5 %}
@@ -94,7 +93,6 @@
 
 </div>
 
-
-    <script src="{{ asset('js/recherche.js') }}"></script>
+<script src="{{ asset('js/recherche.js') }}"></script>
 
 {% endblock %}

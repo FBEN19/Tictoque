@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Repository\RecetteRepository;
@@ -26,29 +25,34 @@ use App\Entity\Note;
 use App\Form\CommentaireType;
 use App\Form\NoteType;
 use App\Service\AnecdoteService;
+use Psr\Log\LoggerInterface;
+
 class RecetteController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
     public function index(
         RecetteRepository $recetteRepository,
         NoteRepository $noteRepository,
-        AnecdoteService $anecdoteService
+        AnecdoteService $anecdoteService,
+        LoggerInterface $logger
     ): Response {
+
         $anecdote = $anecdoteService->getAnecdote();
         $topRecettesRaw = $recetteRepository->findTopRecettesAvecNotes(4);
         $topRecettes = [];
 
         foreach ($topRecettesRaw as $item) {
-            /** @var \App\Entity\Recette $recette */
-            $recette = $item[0]; // l'entité Recette
-            $recette->noteMoyenne = round($item['moyenne'] ?? 0, 1); // on ajoute noteMoyenne dynamiquement
+            $recette = $item[0];
+            $recette->noteMoyenne = round($item['moyenne'] ?? 0, 1);
             $topRecettes[] = $recette;
         }
+
 
         $dernieresRecettes = $recetteRepository->findBy([], ['date_creation' => 'DESC'], 4);
         foreach ($dernieresRecettes as $recette) {
             $recette->noteMoyenne = round($noteRepository->calculerNoteMoyennePourRecette($recette), 1);
         }
+
 
         return $this->render('index.html.twig', [
             'topRecettes' => $topRecettes,
@@ -58,13 +62,15 @@ class RecetteController extends AbstractController
     }
 
     #[Route('/ajouter-recette', name: 'ajouter_recette')]
-    public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, LoggerInterface $logger): Response
     {
+
         $recette = new Recette();
         $form = $this->createForm(RecetteType::class, $recette);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
@@ -77,10 +83,11 @@ class RecetteController extends AbstractController
                         $this->getParameter('images_recette_directory'),
                         $newFilename
                     );
+                    $recette->setImage($newFilename);
+                    $logger->info('Image uploadée avec succès : '.$newFilename);
                 } catch (FileException $e) {
+                    $logger->error('Erreur lors de l\'upload de l\'image : '.$e->getMessage());
                 }
-
-                $recette->setImage($newFilename);
             }
 
             $recette->setDateCreation(new \DateTime());
@@ -101,6 +108,8 @@ class RecetteController extends AbstractController
             $em->persist($recette);
             $em->flush();
 
+            $logger->info('Nouvelle recette enregistrée en base. Id :'.$recette->getId());
+
             return $this->redirectToRoute('app_profil');
         }
 
@@ -114,9 +123,13 @@ class RecetteController extends AbstractController
         Recette $recette,
         Request $request,
         EntityManagerInterface $em,
-        SluggerInterface $slugger
+        SluggerInterface $slugger,
+        LoggerInterface $logger
     ): Response {
+
+
         if ($recette->getUtilisateur() !== $this->getUser()) {
+            $logger->warning('Tentative d\'accès non autorisée à une recette.');
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette recette.');
         }
 
@@ -124,6 +137,7 @@ class RecetteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
@@ -137,7 +151,9 @@ class RecetteController extends AbstractController
                         $newFilename
                     );
                     $recette->setImage($newFilename);
+                    $logger->info('Nouvelle image uploadée : '.$newFilename);
                 } catch (FileException $e) {
+                    $logger->error('Erreur lors du changement d\'image : '.$e->getMessage());
                 }
             }
 
@@ -153,6 +169,8 @@ class RecetteController extends AbstractController
 
             $em->flush();
 
+            $logger->info('Recette mise à jour avec succès. ID : '.$recette->getId());
+
             return $this->redirectToRoute('app_profil');
         }
 
@@ -162,14 +180,15 @@ class RecetteController extends AbstractController
         ]);
     }
 
-
     #[Route('/recette/{id}', name: 'app_afficher_recette')]
     public function afficher(
         Recette $recette,
         Request $request,
         EntityManagerInterface $entityManager,
-        NoteRepository $noteRepository
+        NoteRepository $noteRepository,
+        LoggerInterface $logger
     ): Response {
+
         $noteExistante = $noteRepository->findOneBy([
             'utilisateur' => $this->getUser(),
             'recette' => $recette
@@ -190,6 +209,8 @@ class RecetteController extends AbstractController
                 $entityManager->persist($note);
                 $entityManager->flush();
 
+                $logger->info('Nouvelle note enregistrée pour la recette ID : '.$recette->getId());
+
                 return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
             }
 
@@ -204,9 +225,12 @@ class RecetteController extends AbstractController
                 $entityManager->persist($commentaire);
                 $entityManager->flush();
 
+                $logger->info('Nouveau commentaire ajouté à la recette ID : '.$recette->getId());
+
                 return $this->redirectToRoute('app_afficher_recette', ['id' => $recette->getId()]);
             }
         }
+
         $moyenne = $noteRepository->calculerNoteMoyennePourRecette($recette);
 
         return $this->render('info-recette.html.twig', [
@@ -217,5 +241,4 @@ class RecetteController extends AbstractController
             'note_deja_donnee' => $noteExistante !== null
         ]);
     }
-
 }

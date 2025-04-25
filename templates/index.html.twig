@@ -5,7 +5,7 @@
     <div class="bg-white shadow-sm p-4 rounded">
         <h1 class="text-center fw-bold">Top recettes</h1>
         <div class="text-end mt-3">
-            <a href="#" class="fw-bold text-decoration-none lien-hover" style="color:#F4A261;">
+            <a href="{{ path('app_recherche', {min_rating: 0, exclude_ingredient: '', sort_order: 'rating'}) }}" class="fw-bold text-decoration-none lien-hover" style="color:#F4A261;">
                 Voir plus <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -18,7 +18,7 @@
                                 <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
                             </div>
                             <div class="card-body text-center">
-                                <h5 class="card-title">{{ recette.titre }}</h5>
+                                <h5 class="card-title">{{ recette.titre|length > 20 ? recette.titre|slice(0, 20) ~ '...' : recette.titre }}</h5>
                                 <p class="mb-0">
                                     <span class="text-warning">
                                         {% for i in 1..5 %}
@@ -53,7 +53,7 @@
                                 <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
                             </div>
                             <div class="card-body text-center">
-                                <h5 class="card-title">{{ recette.titre }}</h5>
+                                <h5 class="card-title">{{ recette.titre|length > 20 ? recette.titre|slice(0, 20) ~ '...' : recette.titre }}</h5>
                                 <p class="mb-0">
                                     <span class="text-warning">
                                         {% for i in 1..5 %}
