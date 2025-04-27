@@ -15,6 +15,12 @@
     <div class="col-md-6">
     <br>
         <h1 class="fw-bold text-uppercase">{{ recette.titre }}</h1>
+        <div class="d-flex align-items-center mb-3">
+            {% if recette.utilisateur.photoProfil %}
+                <img src="{{ asset('images/profils/' ~ recette.utilisateur.photoProfil) }}" alt="Photo de {{ recette.utilisateur.nom }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            {% endif %}
+            <p class="text-muted mb-0" style="font-size: 0.9em;">Par {{ recette.utilisateur.nom }}</p>
+        </div>
         <p class="lead">{{ recette.description }}</p>
 
         <div class="my-3">
@@ -129,9 +135,12 @@
 <div>
     {% for commentaire in recette.commentaires %}
         <div class="commentaire">
-            <div class="d-flex justify-content-between mb-1">
+            <div class="d-flex align-items-center mb-2">
+                {% if commentaire.utilisateur.photoProfil %}
+                    <img src="{{ asset('images/profils/' ~ commentaire.utilisateur.photoProfil) }}" alt="Photo de {{ commentaire.utilisateur.nom }}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                {% endif %}
                 <strong>{{ commentaire.utilisateur.nom }}</strong>
-                <span class="text-muted">{{ commentaire.dateCommentaire|date('d/m/Y') }}</span>
+                <span class="text-muted ms-2" style="font-size: 0.9em;">le {{ commentaire.dateCommentaire|date('d/m/Y') }}</span>
             </div>
             <p>{{ commentaire.texte }}</p>
         </div>

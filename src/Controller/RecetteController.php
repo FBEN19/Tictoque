@@ -194,6 +194,8 @@ class RecetteController extends AbstractController
             'recette' => $recette
         ]);
 
+        
+
         $formNote = null;
         $formCommentaire = null;
         $errorMessage = null;
@@ -248,7 +250,7 @@ class RecetteController extends AbstractController
             'formCommentaire' => $formCommentaire ? $formCommentaire->createView() : null,
             'moyenne' => $moyenne,
             'note_deja_donnee' => $noteExistante !== null,
-            'errorMessage' => $errorMessage,  // Passer le message d'erreur à la vue
+            'errorMessage' => $errorMessage,
         ]);
     }
 }
