@@ -64,7 +64,13 @@
         </div>
 
         <hr>
-
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
         <div id="ustensiles" class="mb-4" data-prototype="{{ form_widget(form.utiliser.vars.prototype)|e('html_attr') }}">
             <label class="form-label">Ustensiles : </label>
             {% for ustensile in form.utiliser %}

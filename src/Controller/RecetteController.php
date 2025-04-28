@@ -64,19 +64,17 @@ class RecetteController extends AbstractController
     #[Route('/ajouter-recette', name: 'ajouter_recette')]
     public function ajouter(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, LoggerInterface $logger): Response
     {
-
         $recette = new Recette();
         $form = $this->createForm(RecetteType::class, $recette);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
                     $imageFile->move(
@@ -84,9 +82,9 @@ class RecetteController extends AbstractController
                         $newFilename
                     );
                     $recette->setImage($newFilename);
-                    $logger->info('Image uploadée avec succès : '.$newFilename);
+                    $logger->info('Image uploadée avec succès : ' . $newFilename);
                 } catch (FileException $e) {
-                    $logger->error('Erreur lors de l\'upload de l\'image : '.$e->getMessage());
+                    $logger->error('Erreur lors de l\'upload de l\'image : ' . $e->getMessage());
                 }
             }
 
@@ -105,10 +103,20 @@ class RecetteController extends AbstractController
                 $utiliser->setRecette($recette);
             }
 
+            $ustensiles = [];
+            foreach ($recette->getUtiliser() as $utiliser) {
+                $idUstensile = $utiliser->getUstensile()->getId();
+                if (isset($ustensiles[$idUstensile])) {
+                    $this->addFlash('error', 'Vous avez ajouté deux fois le même ustensile.');
+                    return $this->redirectToRoute('ajouter_recette');
+                }
+                $ustensiles[$idUstensile] = true;
+            }
+
             $em->persist($recette);
             $em->flush();
 
-            $logger->info('Nouvelle recette enregistrée en base. Id :'.$recette->getId());
+            $logger->info('Nouvelle recette enregistrée en base. Id :' . $recette->getId());
 
             return $this->redirectToRoute('app_profil');
         }
@@ -126,9 +134,7 @@ class RecetteController extends AbstractController
         SluggerInterface $slugger,
         LoggerInterface $logger
     ): Response {
-
-
-        if ($recette->getUtilisateur() !== $this->getUser()) {
+        if ($recette->getUtilisateur() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
             $logger->warning('Tentative d\'accès non autorisée à une recette.');
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette recette.');
         }
@@ -137,13 +143,12 @@ class RecetteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
                     $imageFile->move(
@@ -151,25 +156,37 @@ class RecetteController extends AbstractController
                         $newFilename
                     );
                     $recette->setImage($newFilename);
-                    $logger->info('Nouvelle image uploadée : '.$newFilename);
+                    $logger->info('Nouvelle image uploadée : ' . $newFilename);
                 } catch (FileException $e) {
-                    $logger->error('Erreur lors du changement d\'image : '.$e->getMessage());
+                    $logger->error('Erreur lors du changement d\'image : ' . $e->getMessage());
                 }
             }
 
             foreach ($recette->getEtapes() as $etape) {
                 $etape->setRecette($recette);
             }
+
             foreach ($recette->getDetenir() as $detenir) {
                 $detenir->setRecette($recette);
             }
+
             foreach ($recette->getUtiliser() as $utiliser) {
                 $utiliser->setRecette($recette);
             }
 
+            $ustensiles = [];
+            foreach ($recette->getUtiliser() as $utiliser) {
+                $idUstensile = $utiliser->getUstensile()->getId();
+                if (isset($ustensiles[$idUstensile])) {
+                    $this->addFlash('error', 'Vous avez ajouté deux fois le même ustensile.');
+                    return $this->redirectToRoute('modifier_recette', ['id' => $recette->getId()]);
+                }
+                $ustensiles[$idUstensile] = true;
+            }
+
             $em->flush();
 
-            $logger->info('Recette mise à jour avec succès. ID : '.$recette->getId());
+            $logger->info('Recette mise à jour avec succès. ID : ' . $recette->getId());
 
             return $this->redirectToRoute('app_profil');
         }
