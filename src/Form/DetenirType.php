@@ -32,6 +32,7 @@ class DetenirType extends AbstractType
             ->add('unite', null, [
                 'attr' => ['class' => 'form-control w-25'],
                 'label' => 'Unité',
+                'required' => false,
             ]);
     }
 

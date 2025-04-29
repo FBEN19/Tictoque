@@ -65,8 +65,6 @@
         {% endif %}
     </div>
 </div>
-
-<!-- Ustensiles en dessous -->
 <div class="border rounded p-4 mt-4 w-100" style="min-width: 100%;">
     <h4><i class="fas fa-utensils"></i> Ustensiles</h4>
     <div class="d-flex flex-wrap gap-3 justify-content-start">
@@ -86,11 +84,19 @@
 <hr>
 
 <h2><i class="fas fa-carrot"></i> Ingrédients</h2>
-<ul class="d-flex flex-wrap">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
     {% for detenir in recette.detenir %}
-        <li class="li-spacing">{{ detenir.quantite }} {{ detenir.unite }} {{ detenir.ingredient.nom }}</li>
+        <div class="col">
+            <div class="border rounded p-3 h-100 d-flex align-items-center bg-light shadow-sm">
+                <i class="fas me-3 text-success" style="font-size: 1.5rem;"></i>
+                <div>
+                    <strong>{{ detenir.ingredient.nom|capitalize }}</strong><br>
+                    <small class="text-muted">{{ detenir.quantite }} {{ detenir.unite }}</small>
+                </div>
+            </div>
+        </div>
     {% endfor %}
-</ul>
+</div>
 
 <hr>
 

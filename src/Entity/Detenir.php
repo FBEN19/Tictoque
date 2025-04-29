@@ -22,7 +22,7 @@ class Detenir
     #[ORM\Column]
     private ?int $quantite = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $unite = null;
 
     public function getRecette(): ?Recette
