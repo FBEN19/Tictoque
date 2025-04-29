@@ -11,9 +11,8 @@
     <div class="col-md-6">
         <img src="{{ asset('images/recettes/' ~ recette.image) }}" alt="{{ recette.titre }}" class="img-fluid rounded shadow m-2" style="height:350px; width:100%; object-fit: cover;">
     </div>
-
     <div class="col-md-6">
-    <br>
+        <br>
         <h1 class="fw-bold text-uppercase">{{ recette.titre }}</h1>
         <div class="d-flex align-items-center mb-3">
             {% if recette.utilisateur.photoProfil %}
@@ -42,14 +41,12 @@
                 <div class="my-3">
                     <strong>Notez cette recette :</strong>
                     {{ form_start(formNote, {'attr': {'id': 'form-note'}}) }}
-
                     {{ form_widget(formNote.note, {
                         'attr': {
                             'class': 'd-none',
                             'id': 'note_note'
                         }
                     }) }}
-
                     <div class="d-flex gap-2">
                         {% for i in 1..5 %}
                             <input type="radio" class="btn-check" name="note_etoile" id="note_{{ i }}" value="{{ i }}">
@@ -58,7 +55,6 @@
                             </label>
                         {% endfor %}
                     </div>
-
                     {{ form_end(formNote) }}
                 </div>
             {% else %}
@@ -67,22 +63,23 @@
         {% else %}
             <p class="text-muted">Connectez-vous pour noter cette recette.</p>
         {% endif %}
+    </div>
+</div>
 
-        <div class="mt-4">
-            <strong>Ustensiles :</strong>
-            <ul>
-            {% for ustensile in recette.ustensiles %}
-                <div class="ustensile">
-                    {% if ustensile.nom starts with 'http' %}
-                        <img src="{{ ustensile.nom }}" alt="{{ ustensile.nom }}" class="ustensile-image">
-                    {% else %}
-                        <i class="{{ ustensile.nom }}"></i>
-                    {% endif %}
-                    <span>{{ ustensile.description }}</span>
-                </div>
-            {% endfor %}
-            </ul>
-        </div>
+<!-- Ustensiles en dessous -->
+<div class="border rounded p-4 mt-4 w-100" style="min-width: 100%;">
+    <h4><i class="fas fa-utensils"></i> Ustensiles</h4>
+    <div class="d-flex flex-wrap gap-3 justify-content-start">
+        {% for ustensile in recette.ustensiles %}
+            <div class="d-flex align-items-center gap-2 border rounded px-4 py-3" style="min-width: 200px;">
+                {% if ustensile.nom starts with 'http' %}
+                    <img src="{{ ustensile.nom }}" alt="{{ ustensile.nom }}" style="width: 24px; height: 24px;">
+                {% else %}
+                    <i class="{{ ustensile.nom }}"></i>
+                {% endif %}
+                <span>{{ ustensile.description }}</span>
+            </div>
+        {% endfor %}
     </div>
 </div>
 

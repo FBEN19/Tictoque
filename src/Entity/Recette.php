@@ -255,4 +255,5 @@ class Recette
         }
         return $ustensiles;
     }
+
 }

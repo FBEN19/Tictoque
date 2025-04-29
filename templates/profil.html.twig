@@ -75,30 +75,34 @@
                     <h5>Mes Recettes</h5>
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         {% for recette in pagination %}
+                        
                             <div class="col">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="position-relative">
-                                        <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
-                                    </div>
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">{{ recette.titre|length > 15 ? recette.titre|slice(0, 15) ~ '...' : recette.titre }}</h5>
-                                        <p class="mb-2">
-                                            <span class="text-warning">
-                                                {% for i in 1..5 %}
-                                                    {% if i <= recette.noteMoyenne %}
-                                                        <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
-                                                    {% else %}
-                                                        <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </span>
-                                            {{ recette.noteMoyenne|number_format(1, '.', ',') }}/5
-                                        </p>
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ path('modifier_recette', {'id': recette.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
-                                            <a href="{{ path('supprimer_recette', {'id': recette.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette recette ?')">Supprimer</a>
+                                <a href="{{ path('app_afficher_recette', {'id': recette.id}) }}" class="text-decoration-none text-dark">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="position-relative">
+                                            <img src="{{ asset('images/recettes/' ~ recette.image) }}" class="card-img-top rounded" style="height:300px;" alt="{{ recette.titre }}">
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">{{ recette.titre|length > 20 ? recette.titre|slice(0, 20) ~ '...' : recette.titre }}</h5>
+                                            <p class="mb-0">
+                                                <span class="text-warning">
+                                                    {% for i in 1..5 %}
+                                                        {% if i <= recette.noteMoyenne %}
+                                                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                                                        {% else %}
+                                                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                                {{ recette.noteMoyenne|number_format(1, '.', ',') }}/5
+                                            </p>
                                         </div>
                                     </div>
+                                </a>
+
+                                <div class="d-flex justify-content-center gap-2 mt-2">
+                                    <a href="{{ path('modifier_recette', {'id': recette.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
+                                    <a href="{{ path('supprimer_recette', {'id': recette.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette recette ?')">Supprimer</a>
                                 </div>
                             </div>
                         {% else %}
