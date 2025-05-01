@@ -53,6 +53,7 @@ class Recette
         $this->detenir = new ArrayCollection();
         $this->utiliser = new ArrayCollection();
         $this->notes = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
 
     }
 

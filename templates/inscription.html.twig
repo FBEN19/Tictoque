@@ -20,6 +20,9 @@
             <div class="mb-3">
                 {{ form_label(form.email) }}
                 {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Votre adresse e-mail'}}) }}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(form.email) }}
+                </div>
             </div>
 
             <div class="mb-3">

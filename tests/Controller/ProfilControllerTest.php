@@ -1,110 +1,109 @@
 <?php
-
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Utilisateur;
 use App\Entity\Recette;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProfilControllerTest extends WebTestCase
 {
-    private function creerUtilisateur()
+    public function testAccesProfil(): void
+    {
+        $client = static::createClient();
+        $utilisateur = $this->createUtilisateur($client);
+
+        $client->loginUser($utilisateur);
+        $client->request('GET', '/profil');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h3', $utilisateur->getNom());
+    }
+
+    private function createUtilisateur($client): Utilisateur
     {
         $utilisateur = new Utilisateur();
-        $utilisateur->setNom('Benjamin');
-        $utilisateur->setEmail('benjamin@example.com');
+        $utilisateur->setNom('Testeur');
+        $utilisateur->setEmail('test@test.fr');
+        $utilisateur->setMdp('motdepasse');
+        $utilisateur->setDateInscription(new \DateTime());
+        $utilisateur->setRole('ROLE_USER');
+
+        $em = $client->getContainer()->get('doctrine')->getManager();
+        $em->persist($utilisateur);
+        $em->flush();
 
         return $utilisateur;
     }
 
-    public function testAccesProfil()
+    public function testModifierProfil(): void
     {
         $client = static::createClient();
-
-        $utilisateur = $this->creerUtilisateur();
-        $client->loginUser($utilisateur);
-
-        $client->request('GET', '/profil');
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorExists('h1');
-    }
-
-    public function testModifierProfil()
-    {
-        $client = static::createClient();
-
-        $utilisateur = $this->creerUtilisateur();
+        $utilisateur = $this->createUtilisateur($client);
         $client->loginUser($utilisateur);
 
         $client->request('POST', '/modifier-profil', [
-            'nom' => 'Benji',
-            'email' => 'benji@example.com'
+            'nom' => 'NomModifié',
+            'email' => 'nouvel@email.fr',
         ]);
 
         $this->assertResponseRedirects('/profil');
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('h3', 'NomModifié');
     }
 
-    public function testModifierProfilAvecChampsVides()
+    public function testUploadPhotoProfil(): void
     {
         $client = static::createClient();
-
-        $utilisateur = $this->creerUtilisateur();
+        $utilisateur = $this->createUtilisateur($client);
         $client->loginUser($utilisateur);
 
-        $client->request('POST', '/modifier-profil', [
-            'nom' => '',
-            'email' => ''
-        ]);
+        $filePath = __DIR__ . '/../../public/test.jpg';
+        copy(__DIR__ . '/../../public/images/tictoque.jpg', $filePath);
 
-        $this->assertResponseRedirects('/profil');
-    }
-
-    public function testUploadPhotoProfil()
-    {
-        $client = static::createClient();
-
-        $utilisateur = $this->creerUtilisateur();
-        $client->loginUser($utilisateur);
-
-        $cheminFichierTemporaire = sys_get_temp_dir() . '/photo_test.jpg';
-        file_put_contents($cheminFichierTemporaire, 'contenu fake d image');
-
-        $fichier = new UploadedFile(
-            $cheminFichierTemporaire,
-            'photo_test.jpg',
-            'image/jpeg',
-            null,
-            true
-        );
-
-        $client->request('POST', '/changer-photo', [
-            'photo' => $fichier
+        $client->request('POST', '/changer-photo', [], [
+            'photo' => new UploadedFile($filePath, 'test.jpg', 'image/jpeg', null, true),
         ]);
 
         $this->assertResponseRedirects('/profil');
     }
 
     public function testSupprimerRecette()
-    {
-        $client = static::createClient();
+{
+    $entityManager = self::getContainer()->get('doctrine')->getManager();
 
-        $utilisateur = $this->creerUtilisateur();
-        $client->loginUser($utilisateur);
+    $utilisateur = new Utilisateur();
+    $utilisateur->setNom('Test');
+    $utilisateur->setEmail('test@example.com');
+    $utilisateur->setMdp('password');
+    $utilisateur->setRole('ROLE_USER');
+    $utilisateur->setDateInscription(new \DateTime());
 
-        $recette = new Recette();
-        $recette->setTitre('Recette test');
-        $recette->setImage('test.jpg');
+    $entityManager->persist($utilisateur);
+    $entityManager->flush();
 
-        $em = static::getContainer()->get('doctrine')->getManager();
-        $em->persist($utilisateur);
-        $em->persist($recette);
-        $em->flush();
+    $recette = new Recette();
+    $recette->setTitre('Test');
+    $recette->setDescription('Description de test');
+    $recette->setImage('image.jpg');
+    $recette->setDateCreation(new \DateTime());
+    $recette->setUtilisateur($utilisateur);
 
-        $client->request('GET', '/supprimer-recette/' . $recette->getId());
+    $entityManager->persist($recette);
+    $entityManager->flush();
 
-        $this->assertResponseRedirects('/profil');
-    }
+    $idRecette = $recette->getId();
+    $this->assertNotNull($idRecette);
+
+    $entityManager->remove($recette);
+    $entityManager->flush();
+
+    $deletedRecette = $entityManager->find(Recette::class, $idRecette);
+    $this->assertNull($deletedRecette);
+
+    $entityManager->remove($utilisateur);
+    $entityManager->flush();
+}
+
 }

@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -12,32 +12,39 @@ class ConnexionTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/connexion');
-        
+
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'Connexion');
     }
 
     public function testConnexionReussie(): void
     {
-        $entityManager = $this->getContainer()->get(EntityManagerInterface::class);
+        $client = static::createClient();
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $hasher = self::getContainer()->get('security.user_password_hasher');
 
         $utilisateur = new Utilisateur();
-        $utilisateur->setNom("Test Nom");
-        $utilisateur->setEmail("test@email.com");
-        $utilisateur->setMdp(password_hash("motdepasse", PASSWORD_BCRYPT));
-        
+        $utilisateur->setEmail('test@example.com');
+        $utilisateur->setNom('Test');
         $utilisateur->setRole('ROLE_USER');
-
+        $utilisateur->setDateInscription(new \DateTime());
+        $utilisateur->setMdp(
+            $hasher->hashPassword($utilisateur, 'password')
+        );
         $entityManager->persist($utilisateur);
         $entityManager->flush();
 
-        $client = static::createClient();
-        $crawler = $client->request('POST', '/connexion', [
-            'email' => 'test@email.com',
-            'password' => 'motdepasse',
+        $crawler = $client->request('GET', '/connexion');
+
+        $form = $crawler->selectButton('Se connecter')->form([
+            '_username' => 'test@example.com',
+            '_password' => 'password',
         ]);
 
-        
-        $this->assertResponseRedirects('/');
+        $client->submit($form);
+        $client->followRedirect();
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('h2:contains("Connexion")');
     }
 }
