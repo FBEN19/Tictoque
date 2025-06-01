@@ -14,7 +14,7 @@ class Note
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'notes')]
     #[ORM\JoinColumn(name: "id_utilisateur", referencedColumnName: "id", nullable: false)]
     private ?Utilisateur $utilisateur = null;
 

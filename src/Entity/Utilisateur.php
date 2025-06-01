@@ -43,6 +43,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $jetonReinitialisation = null;
 
+
     public function getJetonReinitialisation(): ?string
     {
         return $this->jetonReinitialisation;
@@ -158,12 +159,30 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         
     }
 
-    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Recette::class)]
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Recette::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $recettes;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Note::class, cascade: ['remove'], orphanRemoval: true)]
+    private Collection $notes;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Commentaire::class, cascade: ['remove'], orphanRemoval: true)]
+    private Collection $commentaires;
 
     public function __construct()
     {
         $this->recettes = new ArrayCollection();
+        $this->notes = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+    }
+
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
     }
 
     public function getRecettes(): Collection
